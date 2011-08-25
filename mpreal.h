@@ -85,15 +85,20 @@
 
 #if defined(MPREAL_HAVE_INT64_SUPPORT)
 
-	#if (_MSC_VER >= 1600) || defined (__GNUC__)			// <stdint.h> is available only in msvc2010!
+	#if defined(_MSC_VER) 									// <stdint.h> is available only in msvc2010!
+		#if (_MSC_VER >= 1600)								
+			#include <stdint.h>								
+		#else
+			typedef __int64			 int64_t;
+			typedef unsigned __int64 uint64_t;
+		#endif
+	#endif
+
+	#if defined (__GNUC__)	
 		#include <stdint.h>
 	#endif
 
-	#if (_MSC_VER < 1600)									// use custom stdint.h for msvc < 2010: 
-		#include "stdint.h"									// http://code.google.com/p/msinttypes/
-	#endif
-
-	#define MPFR_USE_INTMAX_T								// should be defined before mpfr.h
+	#define MPFR_USE_INTMAX_T									// should be defined before mpfr.h
 
 #endif 
 
