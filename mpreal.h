@@ -94,11 +94,15 @@
 		#endif
 	#endif
 
-	#if defined (__GNUC__)	
-		#include <stdint.h>
+	#if defined (__GNUC__)
+		#if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64)
+			#undef MPREAL_HAVE_INT64_SUPPORT				// we already support x64 since long int is 64-bit integer, nothing left to do
+		#else
+			#include <stdint.h>								// use int64_t, uint64_t otherwise
+		#endif
 	#endif
 
-	#define MPFR_USE_INTMAX_T									// should be defined before mpfr.h
+	#define MPFR_USE_INTMAX_T								// should be defined before mpfr.h
 
 #endif 
 
