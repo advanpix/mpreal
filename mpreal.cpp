@@ -371,7 +371,7 @@ std::string mpreal::toString(size_t n, int b, mp_rnd_t mode) const
 	else		digits = bits2digits(mpfr_get_prec(mp));
 
 	// Default format settings
-	sprintf_s(format,127,"%%.%dRNg",digits);
+	sprintf(format,"%%.%dRNg",digits);
 	
 	return toString(std::string(format));
 

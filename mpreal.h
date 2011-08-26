@@ -3018,6 +3018,32 @@ inline const mpreal nextbelow  (const mpreal& x)
 	return a;
 }
 
+inline const mpreal urandomb (gmp_randstate_t& state)
+{
+	mpreal x;
+	mpfr_urandomb(x.mp,state);
+	return x;
+}
+
+#if (MPFR_VERSION >= MPFR_VERSION_NUM(3,0,0))
+// use gmp_randinit_default() to init state, gmp_randclear() to clear
+inline const mpreal urandom (gmp_randstate_t& state, mp_rnd_t rnd_mode)
+{
+	mpreal x;
+	mpfr_urandom(x.mp,state,rnd_mode);
+	return x;
+}
+#endif 
+
+#if (MPFR_VERSION <= MPFR_VERSION_NUM(2,4,2))
+inline const mpreal random2 (mp_size_t size, mp_exp_t exp)
+{
+	mpreal x;
+	mpfr_random2(x.mp,size,exp);
+	return x;
+}
+#endif
+
 // Uniformly distributed random number generation
 // a = random(seed); <- initialization & first random number generation
 // a = random();     <- next random numbers generation
@@ -3044,32 +3070,6 @@ inline const mpreal random(unsigned int seed)
 #endif
 
 }
-
-inline const mpreal urandomb (gmp_randstate_t& state)
-{
-	mpreal x;
-	mpfr_urandomb(x.mp,state);
-	return x;
-}
-
-#if (MPFR_VERSION >= MPFR_VERSION_NUM(3,0,0))
-// use gmp_randinit_default() to init state, gmp_randclear() to clear
-inline const mpreal urandom (gmp_randstate_t& state,mp_rnd_t rnd_mode)
-{
-	mpreal x;
-	mpfr_urandom(x.mp,state,rnd_mode);
-	return x;
-}
-#endif 
-
-#if (MPFR_VERSION <= MPFR_VERSION_NUM(2,4,2))
-inline const mpreal random2 (mp_size_t size, mp_exp_t exp)
-{
-	mpreal x;
-	mpfr_random2(x.mp,size,exp);
-	return x;
-}
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 // Set/Get global properties
