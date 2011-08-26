@@ -365,7 +365,7 @@ std::string mpreal::toString(size_t n, int b, mp_rnd_t mode) const
 
 	// Use MPFR native function for output
 	char format[128];
-	size_t digits;
+	int digits;
 
 	if(n !=0 )	digits = n;
 	else		digits = bits2digits(mpfr_get_prec(mp));
