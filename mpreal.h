@@ -84,7 +84,7 @@
 #endif
 
 #if defined(MPREAL_HAVE_INT64_SUPPORT)
-
+	
 	#define MPFR_USE_INTMAX_T								// should be defined before mpfr.h
 
 	#if defined(_MSC_VER) 									// <stdint.h> is available only in msvc2010!
@@ -99,9 +99,9 @@
 	#if defined (__GNUC__)
 		#if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64)
 			#undef MPREAL_HAVE_INT64_SUPPORT				// remove all shaman dances for x64 builds since
-			#undef MPFR_USE_INTMAX_T						// we already support x64 since "long int" is 64-bit integer, nothing left to do
+			#undef MPFR_USE_INTMAX_T						// we already support x64 as of "long int" is 64-bit integer, nothing left to do
 		#else
-			#include <stdint.h>								// use int64_t, uint64_t otherwise
+			#include <stdint.h>								// use int64_t, uint64_t otherwise.
 		#endif
 	#endif
 
