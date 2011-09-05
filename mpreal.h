@@ -109,6 +109,10 @@
 
 #include <mpfr.h>
 
+#if (MPFR_VERSION < MPFR_VERSION_NUM(3,0,0))
+	#include <cstdlib>										// needed for random()
+#endif
+
 namespace mpfr {
 
 class mpreal {
@@ -279,7 +283,7 @@ public:
 
 	operator std::string() const;
 	inline operator mpfr_ptr();
-	inline operator const mpfr_ptr() const;
+	inline operator mpfr_srcptr() const;
 
 	// Math Functions
 	friend const mpreal sqr(const mpreal& v, mp_rnd_t rnd_mode = mpreal::default_rnd);
@@ -2179,9 +2183,9 @@ inline mpreal::operator mpfr_ptr()
 	return mp;
 }
 
-inline mpreal::operator const mpfr_ptr() const
+inline mpreal::operator mpfr_srcptr() const
 {
-	return const_cast<mpfr_ptr>(mp);
+	return const_cast<mpfr_srcptr>(mp);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -2573,32 +2577,32 @@ inline const mpreal atan (const mpreal& v, mp_rnd_t rnd_mode)
 
 inline const mpreal acot (const mpreal& v, mp_rnd_t rnd_mode)
 {
-	return atan(1/v);
+	return atan(1/v, rnd_mode);
 }
 
 inline const mpreal asec (const mpreal& v, mp_rnd_t rnd_mode)
 {
-	return acos(1/v);
+	return acos(1/v, rnd_mode);
 }
 
 inline const mpreal acsc (const mpreal& v, mp_rnd_t rnd_mode)
 {
-	return asin(1/v);
+	return asin(1/v, rnd_mode);
 }
 
 inline const mpreal acoth (const mpreal& v, mp_rnd_t rnd_mode)
 {
-	return atanh(1/v);
+	return atanh(1/v, rnd_mode);
 }
 
 inline const mpreal asech (const mpreal& v, mp_rnd_t rnd_mode)
 {
-	return acosh(1/v);
+	return acosh(1/v, rnd_mode);
 }
 
 inline const mpreal acsch (const mpreal& v, mp_rnd_t rnd_mode)
 {
-	return asinh(1/v);
+	return asinh(1/v, rnd_mode);
 }
 
 inline const mpreal atan2 (const mpreal& y, const mpreal& x, mp_rnd_t rnd_mode)
