@@ -67,7 +67,7 @@
 #include <cmath>
 
 // Options
-#define MPREAL_HAVE_INT64_SUPPORT							// int64_t, uint64_t support
+#define MPREAL_HAVE_INT64_SUPPORT							// int64_t support: available only for MSVC 2010 & GCC 
 
 // Detect compiler using signatures from http://predef.sourceforge.net/
 #if defined(__GNUC__) && defined(__INTEL_COMPILER)
@@ -90,16 +90,17 @@
 	#if defined(_MSC_VER) 									// <stdint.h> is available only in msvc2010!
 		#if (_MSC_VER >= 1600)								
 			#include <stdint.h>								
-		#else
-			typedef __int64			 int64_t;
-			typedef unsigned __int64 uint64_t;
+		#else												// MPFR relies on intmax_t which is available only in msvc2010
+			#undef MPREAL_HAVE_INT64_SUPPORT				// Besides, MPFR - MPIR have to be compiled with msvc2010
+			#undef MPFR_USE_INTMAX_T						// Since we cannot detect this, disable x64 by default
+															// Someone should change this manually if needed.
 		#endif
 	#endif
 
 	#if defined (__GNUC__)
 		#if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64)
 			#undef MPREAL_HAVE_INT64_SUPPORT				// remove all shaman dances for x64 builds since
-			#undef MPFR_USE_INTMAX_T						// we already support x64 as of "long int" is 64-bit integer, nothing left to do
+			#undef MPFR_USE_INTMAX_T						// GCC already support x64 as of "long int" is 64-bit integer, nothing left to do
 		#else
 			#include <stdint.h>								// use int64_t, uint64_t otherwise.
 		#endif
@@ -455,9 +456,10 @@ public:
 	inline void			setPrecision(int Precision);
 	inline int			getPrecision() const;
 	
-	// Set mpreal to +-inf, NaN
-	void      set_inf(int sign = +1);	
-	void	  set_nan();
+	// Set mpreal to +/- inf, NaN, +/-0
+	mpreal&   setInf(int sign = +1);	
+	mpreal&	  setNan();
+	mpreal&	  setZero(int sign = +1);
 
 	// sign = -1 or +1
 	void set_sign(int sign, mp_rnd_t rnd_mode = default_rnd);
@@ -813,7 +815,8 @@ inline mpreal& mpreal::operator=(const mpreal& v)
 {
 	if (this != &v)
 	{
-		mpfr_set_prec(mp,mpfr_get_prec(v.mp)); 
+		mpfr_clear(mp);
+		mpfr_init2(mp,mpfr_get_prec(v.mp));
 		mpfr_set(mp,v.mp,default_rnd);
 	}
 	return *this;
@@ -2244,14 +2247,21 @@ inline int mpreal::getPrecision() const
 	return get_prec();
 }
 
-inline void mpreal::set_inf(int sign) 
+inline mpreal& mpreal::setInf(int sign) 
 { 
 	mpfr_set_inf(mp,sign);
 }	
 
-inline void mpreal::set_nan() 
+inline mpreal& mpreal::setNan() 
 {
 	mpfr_set_nan(mp);
+}
+
+inline mpreal&	mpreal::setZero(int sign)
+{
+	mpfr_set_zero(mp,sign);
+
+	return *this;
 }
 
 inline mp_exp_t mpreal::get_exp ()

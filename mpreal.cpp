@@ -372,7 +372,7 @@ std::string mpreal::toString(size_t n, int b, mp_rnd_t mode) const
 
 	// Default format settings
 	sprintf(format,"%%.%dRNg",digits);
-	
+
 	return toString(std::string(format));
 
 #else
