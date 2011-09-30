@@ -11,7 +11,7 @@
 	Contributors:
 	Brian Gladman, Helmut Jarausch, Fokko Beekhof, Ulrich Mutze, 
 	Heinz van Saanen, Pere Constans, Peter van Hoof, Gael Guennebaud, 
-	Tsai Chia Cheng.
+	Tsai Chia Cheng, Alexei Zubanov.
 
 	****************************************************************************
 	This library is free software; you can redistribute it and/or
@@ -69,8 +69,8 @@ using std::istream;
 
 namespace mpfr{
 
-mp_rnd_t   mpreal::default_rnd  = mpfr_get_default_rounding_mode();	
-mp_prec_t  mpreal::default_prec = mpfr_get_default_prec();	
+mp_rnd_t   mpreal::default_rnd  = MPFR_RNDN;	//(mpfr_get_default_rounding_mode)();	
+mp_prec_t  mpreal::default_prec = 64;			//(mpfr_get_default_prec)();	
 int		   mpreal::default_base = 10;
 int        mpreal::double_bits = -1;
 bool       mpreal::is_custom_malloc = false;
@@ -81,6 +81,11 @@ mpreal::mpreal()
 	set_custom_malloc();
 	mpfr_init2(mp,default_prec); 
 	mpfr_set_ui(mp,0,default_rnd);
+
+#if defined(_MSC_VER) && defined(_DEBUG) 
+	setDebugView();
+#endif
+
 }
 
 mpreal::mpreal(const mpreal& u) 
@@ -88,6 +93,11 @@ mpreal::mpreal(const mpreal& u)
 	set_custom_malloc();
 	mpfr_init2(mp,mpfr_get_prec(u.mp));
 	mpfr_set(mp,u.mp,default_rnd);
+
+#if defined(_MSC_VER) && defined(_DEBUG) 
+	setDebugView();
+#endif
+
 }
 
 mpreal::mpreal(const mpfr_t u)
@@ -95,6 +105,11 @@ mpreal::mpreal(const mpfr_t u)
 	set_custom_malloc();
 	mpfr_init2(mp,mpfr_get_prec(u));
 	mpfr_set(mp,u,default_rnd);
+	
+#if defined(_MSC_VER) && defined(_DEBUG) 
+	setDebugView();
+#endif
+
 }
 
 mpreal::mpreal(const mpf_t u)
@@ -102,6 +117,11 @@ mpreal::mpreal(const mpf_t u)
 	set_custom_malloc();
 	mpfr_init2(mp,(mp_prec_t) mpf_get_prec(u)); // (gmp: mp_bitcnt_t) unsigned long -> long (mpfr: mp_prec_t)
 	mpfr_set_f(mp,u,default_rnd);
+
+#if defined(_MSC_VER) && defined(_DEBUG) 
+	setDebugView();
+#endif
+
 }
 
 mpreal::mpreal(const mpz_t u, mp_prec_t prec, mp_rnd_t mode)
@@ -109,6 +129,11 @@ mpreal::mpreal(const mpz_t u, mp_prec_t prec, mp_rnd_t mode)
 	set_custom_malloc();
 	mpfr_init2(mp,prec);
 	mpfr_set_z(mp,u,mode);
+	
+#if defined(_MSC_VER) && defined(_DEBUG) 
+	setDebugView();
+#endif
+
 }
 
 mpreal::mpreal(const mpq_t u, mp_prec_t prec, mp_rnd_t mode)
@@ -116,6 +141,11 @@ mpreal::mpreal(const mpq_t u, mp_prec_t prec, mp_rnd_t mode)
 	set_custom_malloc();
 	mpfr_init2(mp,prec);
 	mpfr_set_q(mp,u,mode);
+	
+#if defined(_MSC_VER) && defined(_DEBUG) 
+	setDebugView();
+#endif
+
 }
 
 mpreal::mpreal(const double u, mp_prec_t prec, mp_rnd_t mode)
@@ -125,6 +155,11 @@ mpreal::mpreal(const double u, mp_prec_t prec, mp_rnd_t mode)
     {
     	mpfr_init2(mp,prec);
 	    mpfr_set_d(mp,u,mode);
+		
+#if defined(_MSC_VER) && defined(_DEBUG) 
+		setDebugView();
+#endif
+
     }
     else
         throw conversion_overflow();
@@ -135,6 +170,11 @@ mpreal::mpreal(const long double u, mp_prec_t prec, mp_rnd_t mode)
 	set_custom_malloc();
     mpfr_init2(mp,prec);
 	mpfr_set_ld(mp,u,mode);
+	
+#if defined(_MSC_VER) && defined(_DEBUG) 
+	setDebugView();
+#endif
+
 }
 
 mpreal::mpreal(const unsigned long int u, mp_prec_t prec, mp_rnd_t mode)
@@ -142,6 +182,11 @@ mpreal::mpreal(const unsigned long int u, mp_prec_t prec, mp_rnd_t mode)
 	set_custom_malloc();
 	mpfr_init2(mp,prec);
 	mpfr_set_ui(mp,u,mode);
+	
+#if defined(_MSC_VER) && defined(_DEBUG) 
+	setDebugView();
+#endif
+
 }
 
 mpreal::mpreal(const unsigned int u, mp_prec_t prec, mp_rnd_t mode)
@@ -149,6 +194,11 @@ mpreal::mpreal(const unsigned int u, mp_prec_t prec, mp_rnd_t mode)
 	set_custom_malloc();
 	mpfr_init2(mp,prec);
 	mpfr_set_ui(mp,u,mode);
+
+#if defined(_MSC_VER) && defined(_DEBUG) 
+	setDebugView();
+#endif
+
 }
 
 mpreal::mpreal(const long int u, mp_prec_t prec, mp_rnd_t mode)
@@ -156,6 +206,11 @@ mpreal::mpreal(const long int u, mp_prec_t prec, mp_rnd_t mode)
 	set_custom_malloc();
 	mpfr_init2(mp,prec);
 	mpfr_set_si(mp,u,mode);
+
+#if defined(_MSC_VER) && defined(_DEBUG) 
+	setDebugView();
+#endif
+
 }
 
 mpreal::mpreal(const int u, mp_prec_t prec, mp_rnd_t mode)
@@ -163,6 +218,11 @@ mpreal::mpreal(const int u, mp_prec_t prec, mp_rnd_t mode)
 	set_custom_malloc();
 	mpfr_init2(mp,prec);
 	mpfr_set_si(mp,u,mode);
+
+#if defined(_MSC_VER) && defined(_DEBUG) 
+	setDebugView();
+#endif
+
 }
 
 #if defined (MPREAL_HAVE_INT64_SUPPORT)
@@ -171,6 +231,11 @@ mpreal::mpreal(const uint64_t u, mp_prec_t prec, mp_rnd_t mode)
 	set_custom_malloc();
 	mpfr_init2(mp,prec);
 	mpfr_set_uj(mp, u, mode); 
+
+#if defined(_MSC_VER) && defined(_DEBUG) 
+	setDebugView();
+#endif
+
 }
 
 mpreal::mpreal(const int64_t u, mp_prec_t prec, mp_rnd_t mode)
@@ -178,6 +243,11 @@ mpreal::mpreal(const int64_t u, mp_prec_t prec, mp_rnd_t mode)
 	set_custom_malloc();
 	mpfr_init2(mp,prec);
 	mpfr_set_sj(mp, u, mode); 
+	
+#if defined(_MSC_VER) && defined(_DEBUG) 
+	setDebugView();
+#endif
+
 }
 #endif
 
@@ -186,6 +256,11 @@ mpreal::mpreal(const char* s, mp_prec_t prec, int base, mp_rnd_t mode)
 	set_custom_malloc();
 	mpfr_init2(mp,prec);
 	mpfr_set_str(mp, s, base, mode); 
+
+#if defined(_MSC_VER) && defined(_DEBUG) 
+	setDebugView();
+#endif
+
 }
 
 mpreal::mpreal(const std::string& s, mp_prec_t prec, int base, mp_rnd_t mode)
@@ -193,6 +268,11 @@ mpreal::mpreal(const std::string& s, mp_prec_t prec, int base, mp_rnd_t mode)
 	set_custom_malloc();
 	mpfr_init2(mp,prec);
 	mpfr_set_str(mp, s.c_str(), base, mode); 
+
+#if defined(_MSC_VER) && defined(_DEBUG) 
+	setDebugView();
+#endif
+
 }
 
 mpreal::~mpreal() 
@@ -213,6 +293,11 @@ mpreal& mpreal::operator=(const char* s)
 		mpfr_set_prec(mp,mpfr_get_prec(t)); 
 		mpfr_set(mp,t,mpreal::default_rnd);
 		mpfr_clear(t);
+
+#if defined(_MSC_VER) && defined(_DEBUG) 
+		setDebugView();
+#endif
+
 	}else{
 		mpfr_clear(t);
 	}
@@ -265,21 +350,6 @@ const mpreal agm (const mpreal& v1, const mpreal& v2, mp_rnd_t rnd_mode)
 	return a;
 }
 
-const mpreal hypot (const mpreal& x, const mpreal& y, mp_rnd_t rnd_mode)
-{
-	mpreal a;
-	mp_prec_t yp, xp;
-
-	yp = y.get_prec(); 
-	xp = x.get_prec(); 
-
-	a.set_prec(yp>xp?yp:xp);
-
-	mpfr_hypot(a.mp, x.mp, y.mp, rnd_mode);
-
-	return a;
-}
-
 const mpreal sum (const mpreal tab[], unsigned long int n, mp_rnd_t rnd_mode)
 {
 	mpreal x;
@@ -291,21 +361,6 @@ const mpreal sum (const mpreal tab[], unsigned long int n, mp_rnd_t rnd_mode)
 	mpfr_sum(x.mp,t,n,rnd_mode);
 	delete[] t;
 	return x;
-}
-
-const mpreal remainder (const mpreal& x, const mpreal& y, mp_rnd_t rnd_mode)
-{	
-	mpreal a;
-	mp_prec_t yp, xp;
-
-	yp = y.get_prec(); 
-	xp = x.get_prec(); 
-
-	a.set_prec(yp>xp?yp:xp);
-
-	mpfr_remainder(a.mp, x.mp, y.mp, rnd_mode);
-
-	return a;
 }
 
 const mpreal remquo (long* q, const mpreal& x, const mpreal& y, mp_rnd_t rnd_mode)
@@ -333,49 +388,48 @@ std::string toString(T t, std::ios_base & (*f)(std::ios_base&))
 
 mpreal::operator std::string() const
 {
-	return toString(0);
+	return toString();
 }
 
 #if (MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0))
-std::string mpreal::toString(std::string format) const
+
+std::string mpreal::toString(const std::string& format) const
 {
 	char *s;
 	string out;
 
-	// Use default 
-	if(format.empty())
+	if( !format.empty() )
 	{
-		return toString(0);
-	}
+		if(!(mpfr_asprintf(&s,format.c_str(),mp) < 0))
+		{
+			out = std::string(s);
 
-	if(!(mpfr_asprintf(&s,format.c_str(),mp) < 0))
-	{
-		out = std::string(s);
-
-		mpfr_free_str(s);
+			mpfr_free_str(s);
+		}
 	}
 
 	return out;
 }
+
 #endif
 
 std::string mpreal::toString(size_t n, int b, mp_rnd_t mode) const
 {
+
 #if (MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0))
 
 	// Use MPFR native function for output
 	char format[128];
 	int digits;
 
-	if(n !=0 )	digits = n;
-	else		digits = bits2digits(mpfr_get_prec(mp));
+	digits = n > 0 ? n : bits2digits(mpfr_get_prec(mp));
 
-	// Default format settings
-	sprintf(format,"%%.%dRNg",digits);
+	sprintf(format,"%%.%dRNg",digits);		// Default format
 
 	return toString(std::string(format));
 
 #else
+
 	char *s, *ns = NULL; 
 	size_t slen, nslen;
 	mp_exp_t exp;
@@ -385,13 +439,13 @@ std::string mpreal::toString(size_t n, int b, mp_rnd_t mode) const
 
 	if(mpfr_inf_p(mp))
 	{ 
-		if(mpfr_sgn(mp)>0) return "+@Inf@";
-		else			   return "-@Inf@";
+		if(mpfr_sgn(mp)>0) return "+Inf";
+		else			   return "-Inf";
 	}
 
 	if(mpfr_zero_p(mp)) return "0";
-	if(mpfr_nan_p(mp))  return "@NaN@";
-		
+	if(mpfr_nan_p(mp))  return "NaN";
+
 	s  = mpfr_get_str(NULL,&exp,b,0,mp,mode);
 	ns = mpfr_get_str(NULL,&exp,b,n,mp,mode);
 
@@ -472,9 +526,9 @@ std::string mpreal::toString(size_t n, int b, mp_rnd_t mode) const
 	}else{
 		return "conversion error!";
 	}
-
 #endif
 }
+
 
 //////////////////////////////////////////////////////////////////////////
 // I/O
@@ -485,50 +539,10 @@ ostream& operator<<(ostream& os, const mpreal& v)
 
 istream& operator>>(istream &is, mpreal& v)
 {
-#if 1
 	string tmp;
 	is >> tmp;
 	mpfr_set_str(v.mp, tmp.c_str(),mpreal::default_base,mpreal::default_rnd);
 	return is;
-#else
-	char c;	
-	string s = "";
-	mpfr_t t;
-	
-	mpreal::set_custom_malloc();
-	
-	if(is.good())
-	{
-		is>>ws;
-		while ((c = is.get())!=EOF)
-		{
-			if(c ==' ' || c == '\t' || c == '\n' || c == '\r')
-			{
-				is.putback(c);
-				break;
-			}
-			s += c;
-		}
-
-		if(s.size() != 0)
-		{
-			// Protect current value from alternation in case of input error
-			// so some error handling(roll back) procedure can be used 			
-
-			if(0==mpfr_init_set_str(t,s.c_str(),mpreal::default_base,mpreal::default_rnd))
-			{
-				mpfr_set(v.mp,t,mpreal::default_rnd);				
-				mpfr_clear(t);
-
-			}else{
-				mpfr_clear(t);
-				cerr<<"error reading from istream"<<endl;
-				// throw an exception
-			}
-		}
-	}
-	return is;
-#endif
 }
 
 // Optimized dynamic memory allocation/(re-)deallocation.
