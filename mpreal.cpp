@@ -58,7 +58,10 @@
 */
 #include <cstring>
 #include "mpreal.h"
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 #include "dlmalloc.h"
+#endif
 
 using std::ws;
 using std::cerr;
@@ -73,93 +76,103 @@ mp_rnd_t   mpreal::default_rnd  = MPFR_RNDN;	//(mpfr_get_default_rounding_mode)(
 mp_prec_t  mpreal::default_prec = 64;			//(mpfr_get_default_prec)();	
 int		   mpreal::default_base = 10;
 int        mpreal::double_bits = -1;
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 bool       mpreal::is_custom_malloc = false;
+#endif
 
 // Default constructor: creates mp number and initializes it to 0.
 mpreal::mpreal() 
 { 
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 	set_custom_malloc();
+#endif
+
 	mpfr_init2(mp,default_prec); 
 	mpfr_set_ui(mp,0,default_rnd);
 
-#if defined(_MSC_VER) && defined(_DEBUG) 
-	setDebugView();
-#endif
-
+	MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
 mpreal::mpreal(const mpreal& u) 
 {
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 	set_custom_malloc();
+#endif
+
 	mpfr_init2(mp,mpfr_get_prec(u.mp));
 	mpfr_set(mp,u.mp,default_rnd);
 
-#if defined(_MSC_VER) && defined(_DEBUG) 
-	setDebugView();
-#endif
-
+	MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
 mpreal::mpreal(const mpfr_t u)
 {
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 	set_custom_malloc();
+#endif
+
 	mpfr_init2(mp,mpfr_get_prec(u));
 	mpfr_set(mp,u,default_rnd);
 	
-#if defined(_MSC_VER) && defined(_DEBUG) 
-	setDebugView();
-#endif
-
+	MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
 mpreal::mpreal(const mpf_t u)
 {
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 	set_custom_malloc();
+#endif
+
 	mpfr_init2(mp,(mp_prec_t) mpf_get_prec(u)); // (gmp: mp_bitcnt_t) unsigned long -> long (mpfr: mp_prec_t)
 	mpfr_set_f(mp,u,default_rnd);
 
-#if defined(_MSC_VER) && defined(_DEBUG) 
-	setDebugView();
-#endif
-
+	MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
 mpreal::mpreal(const mpz_t u, mp_prec_t prec, mp_rnd_t mode)
 {
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 	set_custom_malloc();
+#endif
+
 	mpfr_init2(mp,prec);
 	mpfr_set_z(mp,u,mode);
 	
-#if defined(_MSC_VER) && defined(_DEBUG) 
-	setDebugView();
-#endif
-
+	MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
 mpreal::mpreal(const mpq_t u, mp_prec_t prec, mp_rnd_t mode)
 {
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 	set_custom_malloc();
+#endif
+
 	mpfr_init2(mp,prec);
 	mpfr_set_q(mp,u,mode);
 	
-#if defined(_MSC_VER) && defined(_DEBUG) 
-	setDebugView();
-#endif
-
+	MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
 mpreal::mpreal(const double u, mp_prec_t prec, mp_rnd_t mode)
 {
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 	set_custom_malloc();
+#endif
+
     if(double_bits == -1 || fits_in_bits(u, double_bits))
     {
     	mpfr_init2(mp,prec);
 	    mpfr_set_d(mp,u,mode);
 		
-#if defined(_MSC_VER) && defined(_DEBUG) 
-		setDebugView();
-#endif
-
+		MPREAL_MSVC_DEBUGVIEW_CODE;
     }
     else
         throw conversion_overflow();
@@ -167,112 +180,121 @@ mpreal::mpreal(const double u, mp_prec_t prec, mp_rnd_t mode)
 
 mpreal::mpreal(const long double u, mp_prec_t prec, mp_rnd_t mode)
 { 
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 	set_custom_malloc();
+#endif
+
     mpfr_init2(mp,prec);
 	mpfr_set_ld(mp,u,mode);
 	
-#if defined(_MSC_VER) && defined(_DEBUG) 
-	setDebugView();
-#endif
-
+	MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
 mpreal::mpreal(const unsigned long int u, mp_prec_t prec, mp_rnd_t mode)
 { 
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 	set_custom_malloc();
+#endif
+
 	mpfr_init2(mp,prec);
 	mpfr_set_ui(mp,u,mode);
 	
-#if defined(_MSC_VER) && defined(_DEBUG) 
-	setDebugView();
-#endif
-
+	MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
 mpreal::mpreal(const unsigned int u, mp_prec_t prec, mp_rnd_t mode)
 { 
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 	set_custom_malloc();
+#endif
+
 	mpfr_init2(mp,prec);
 	mpfr_set_ui(mp,u,mode);
 
-#if defined(_MSC_VER) && defined(_DEBUG) 
-	setDebugView();
-#endif
-
+	MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
 mpreal::mpreal(const long int u, mp_prec_t prec, mp_rnd_t mode)
 { 
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 	set_custom_malloc();
+#endif
+
 	mpfr_init2(mp,prec);
 	mpfr_set_si(mp,u,mode);
 
-#if defined(_MSC_VER) && defined(_DEBUG) 
-	setDebugView();
-#endif
-
+	MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
 mpreal::mpreal(const int u, mp_prec_t prec, mp_rnd_t mode)
 { 
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 	set_custom_malloc();
+#endif
+
 	mpfr_init2(mp,prec);
 	mpfr_set_si(mp,u,mode);
 
-#if defined(_MSC_VER) && defined(_DEBUG) 
-	setDebugView();
-#endif
-
+	MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
 #if defined (MPREAL_HAVE_INT64_SUPPORT)
 mpreal::mpreal(const uint64_t u, mp_prec_t prec, mp_rnd_t mode)
 {
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 	set_custom_malloc();
+#endif
+
 	mpfr_init2(mp,prec);
 	mpfr_set_uj(mp, u, mode); 
 
-#if defined(_MSC_VER) && defined(_DEBUG) 
-	setDebugView();
-#endif
-
+	MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
 mpreal::mpreal(const int64_t u, mp_prec_t prec, mp_rnd_t mode)
 {
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 	set_custom_malloc();
+#endif
+
 	mpfr_init2(mp,prec);
 	mpfr_set_sj(mp, u, mode); 
 	
-#if defined(_MSC_VER) && defined(_DEBUG) 
-	setDebugView();
-#endif
-
+	MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 #endif
 
 mpreal::mpreal(const char* s, mp_prec_t prec, int base, mp_rnd_t mode)
 {
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 	set_custom_malloc();
+#endif
+
 	mpfr_init2(mp,prec);
 	mpfr_set_str(mp, s, base, mode); 
 
-#if defined(_MSC_VER) && defined(_DEBUG) 
-	setDebugView();
-#endif
-
+	MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
 mpreal::mpreal(const std::string& s, mp_prec_t prec, int base, mp_rnd_t mode)
 {
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 	set_custom_malloc();
+#endif
+
 	mpfr_init2(mp,prec);
 	mpfr_set_str(mp, s.c_str(), base, mode); 
 
-#if defined(_MSC_VER) && defined(_DEBUG) 
-	setDebugView();
-#endif
-
+	MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
 mpreal::~mpreal() 
@@ -284,8 +306,10 @@ mpreal::~mpreal()
 mpreal& mpreal::operator=(const char* s)
 {
 	mpfr_t t;
-	
+
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 	set_custom_malloc();
+#endif
 
 	if(0==mpfr_init_set_str(t,s,default_base,default_rnd))
 	{
@@ -294,9 +318,7 @@ mpreal& mpreal::operator=(const char* s)
 		mpfr_set(mp,t,mpreal::default_rnd);
 		mpfr_clear(t);
 
-#if defined(_MSC_VER) && defined(_DEBUG) 
-		setDebugView();
-#endif
+		MPREAL_MSVC_DEBUGVIEW_CODE;
 
 	}else{
 		mpfr_clear(t);
@@ -395,7 +417,7 @@ mpreal::operator std::string() const
 
 std::string mpreal::toString(const std::string& format) const
 {
-	char *s;
+	char *s = NULL;
 	string out;
 
 	if( !format.empty() )
@@ -413,7 +435,7 @@ std::string mpreal::toString(const std::string& format) const
 
 #endif
 
-std::string mpreal::toString(size_t n, int b, mp_rnd_t mode) const
+std::string mpreal::toString(int n, int b, mp_rnd_t mode) const
 {
 
 #if (MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0))
@@ -435,7 +457,9 @@ std::string mpreal::toString(size_t n, int b, mp_rnd_t mode) const
 	mp_exp_t exp;
 	string out;
 
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
 	set_custom_malloc();
+#endif
 
 	if(mpfr_inf_p(mp))
 	{ 
@@ -534,7 +558,7 @@ std::string mpreal::toString(size_t n, int b, mp_rnd_t mode) const
 // I/O
 ostream& operator<<(ostream& os, const mpreal& v)
 {
-	return os<<v.toString(static_cast<size_t>(os.precision()));
+	return os<<v.toString(static_cast<int>(os.precision()));
 }
 
 istream& operator>>(istream &is, mpreal& v)
@@ -545,29 +569,33 @@ istream& operator>>(istream &is, mpreal& v)
 	return is;
 }
 
-// Optimized dynamic memory allocation/(re-)deallocation.
-void * mpreal::mpreal_allocate(size_t alloc_size)
-{
-	return(dlmalloc(alloc_size));
-}
 
-void * mpreal::mpreal_reallocate(void *ptr, size_t old_size, size_t new_size)
-{
-	return(dlrealloc(ptr,new_size));
-}
-
-void mpreal::mpreal_free(void *ptr, size_t size)
-{
-	dlfree(ptr);
-}
-
-inline void mpreal::set_custom_malloc(void)
-{
-	if(!is_custom_malloc)
+#if defined (MPREAL_HAVE_CUSTOM_MPFR_MALLOC)
+	// Optimized dynamic memory allocation/(re-)deallocation.
+	void * mpreal::mpreal_allocate(size_t alloc_size)
 	{
-		mp_set_memory_functions(mpreal_allocate,mpreal_reallocate,mpreal_free);
-		is_custom_malloc = true;
+		return(dlmalloc(alloc_size));
 	}
-}
+
+	void * mpreal::mpreal_reallocate(void *ptr, size_t old_size, size_t new_size)
+	{
+		return(dlrealloc(ptr,new_size));
+	}
+
+	void mpreal::mpreal_free(void *ptr, size_t size)
+	{
+		dlfree(ptr);
+	}
+
+	inline void mpreal::set_custom_malloc(void)
+	{
+		if(!is_custom_malloc)
+		{
+			mp_set_memory_functions(mpreal_allocate,mpreal_reallocate,mpreal_free);
+			is_custom_malloc = true;
+		}
+	}
+#endif
+
 }
 
