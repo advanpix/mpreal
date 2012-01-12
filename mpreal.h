@@ -550,148 +550,61 @@ public:
 
 namespace internal{
 
-	// Use SFINAE to avoid arithmetic operators instantiation for non-numeric types
+	// Use SFINAE to restrict arithmetic operations instantiation only for numeric types
 	// This is needed for smooth integration with libraries based on expression templates
-	template <typename Lhs, typename Rhs> struct result_type {};	
-	template <typename Lhs, typename Rhs> struct bool_result_type {};	
-
-	template <> struct result_type<mpreal,	mpreal>				{typedef mpreal type;};	
-	template <> struct result_type<mpreal,	mpz_t>				{typedef mpreal type;};	
-	template <> struct result_type<mpreal,	mpq_t>				{typedef mpreal type;};	
-	template <> struct result_type<mpreal,	long double>		{typedef mpreal type;};	
-	template <> struct result_type<mpreal,	double>				{typedef mpreal type;};	
-	template <> struct result_type<mpreal,	unsigned long int>	{typedef mpreal type;};	
-	template <> struct result_type<mpreal,	unsigned int>		{typedef mpreal type;};	
-	template <> struct result_type<mpreal,	long int>			{typedef mpreal type;};	
-	template <> struct result_type<mpreal,	int>				{typedef mpreal type;};	
-
-	template <> struct result_type<mpz_t			,mpreal>	{typedef mpreal type;};	
-	template <> struct result_type<mpq_t			,mpreal>	{typedef mpreal type;};	
-	template <> struct result_type<long double		,mpreal>	{typedef mpreal type;};	
-	template <> struct result_type<double			,mpreal>	{typedef mpreal type;};	
-	template <> struct result_type<unsigned long int,mpreal>	{typedef mpreal type;};	
-	template <> struct result_type<unsigned int		,mpreal>	{typedef mpreal type;};	
-	template <> struct result_type<long int			,mpreal>	{typedef mpreal type;};	
-	template <> struct result_type<int				,mpreal>	{typedef mpreal type;};	
-
-	template <> struct bool_result_type<mpreal,	mpreal>				{typedef bool type;};	
-	template <> struct bool_result_type<mpreal,	long double>		{typedef bool type;};	
-	template <> struct bool_result_type<mpreal,	double>				{typedef bool type;};	
-	template <> struct bool_result_type<mpreal,	unsigned long int>	{typedef bool type;};	
-	template <> struct bool_result_type<mpreal,	unsigned int>		{typedef bool type;};	
-	template <> struct bool_result_type<mpreal,	long int>			{typedef bool type;};	
-	template <> struct bool_result_type<mpreal,	int>				{typedef bool type;};	
-
-	template <> struct bool_result_type<long double			,mpreal>	{typedef bool type;};	
-	template <> struct bool_result_type<double				,mpreal>	{typedef bool type;};	
-	template <> struct bool_result_type<unsigned long int	,mpreal>	{typedef bool type;};	
-	template <> struct bool_result_type<unsigned int		,mpreal>	{typedef bool type;};	
-	template <> struct bool_result_type<long int			,mpreal>	{typedef bool type;};	
-	template <> struct bool_result_type<int					,mpreal>	{typedef bool type;};	
-
+	template <typename ArgumentType> struct result_type {};	
+	
+	template <> struct result_type<mpreal>				{typedef mpreal type;};	
+	template <> struct result_type<mpz_t>				{typedef mpreal type;};	
+	template <> struct result_type<mpq_t>				{typedef mpreal type;};	
+	template <> struct result_type<long double>			{typedef mpreal type;};	
+	template <> struct result_type<double>				{typedef mpreal type;};	
+	template <> struct result_type<unsigned long int>	{typedef mpreal type;};	
+	template <> struct result_type<unsigned int>		{typedef mpreal type;};	
+	template <> struct result_type<long int>			{typedef mpreal type;};	
+	template <> struct result_type<int>					{typedef mpreal type;};	
 
 #if defined (MPREAL_HAVE_INT64_SUPPORT)
-	template <> struct result_type<mpreal,		int64_t	>		{typedef mpreal type;};	
-	template <> struct result_type<mpreal,		uint64_t>		{typedef mpreal type;};	
-	template <> struct result_type<int64_t,		mpreal	>		{typedef mpreal type;};	
-	template <> struct result_type<uint64_t,	mpreal	>		{typedef mpreal type;};	
-
-	template <> struct bool_result_type<mpreal,		int64_t	>		{typedef bool type;};	
-	template <> struct bool_result_type<mpreal,		uint64_t>		{typedef bool type;};	
-	template <> struct bool_result_type<int64_t,	mpreal	>		{typedef bool type;};	
-	template <> struct bool_result_type<uint64_t,	mpreal	>		{typedef bool type;};	
+	template <> struct result_type<int64_t  >		{typedef mpreal type;};	
+	template <> struct result_type<uint64_t >		{typedef mpreal type;};	
 #endif
 }
 
 // + Addition
 template <typename Rhs> 
-inline const typename internal::result_type<mpreal, Rhs>::type 
+inline const typename internal::result_type<Rhs>::type 
 	operator+(const mpreal& lhs, const Rhs& rhs){ return mpreal(lhs) += rhs;	}
 
 template <typename Lhs> 
-inline const typename internal::result_type<Lhs, mpreal>::type 
+inline const typename internal::result_type<Lhs>::type 
 	operator+(const Lhs& lhs, const mpreal& rhs){ return mpreal(rhs) += lhs;	} 
 
 // - Subtraction
 template <typename Rhs> 
-inline const typename internal::result_type<mpreal, Rhs>::type 
+inline const typename internal::result_type<Rhs>::type 
 	operator-(const mpreal& lhs, const Rhs& rhs){ return mpreal(lhs) -= rhs;	}
 
 template <typename Lhs> 
-inline const typename internal::result_type<Lhs, mpreal>::type 
+inline const typename internal::result_type<Lhs>::type 
 	operator-(const Lhs& lhs, const mpreal& rhs){ return mpreal(lhs) -= rhs;	}
 
 // * Multiplication
 template <typename Rhs> 
-inline const typename internal::result_type<mpreal, Rhs>::type 
+inline const typename internal::result_type<Rhs>::type 
 	operator*(const mpreal& lhs, const Rhs& rhs){ return mpreal(lhs) *= rhs;	}
 
 template <typename Lhs> 
-inline const typename internal::result_type<Lhs, mpreal>::type 
+inline const typename internal::result_type<Lhs>::type 
 	operator*(const Lhs& lhs, const mpreal& rhs){ return mpreal(rhs) *= lhs;	} 
 
 // / Division
 template <typename Rhs> 
-inline const typename internal::result_type<mpreal, Rhs>::type 
+inline const typename internal::result_type<Rhs>::type 
 	operator/(const mpreal& lhs, const Rhs& rhs){ return mpreal(lhs) /= rhs;	}
 
 template <typename Lhs> 
-inline const typename internal::result_type<Lhs, mpreal>::type 
+inline const typename internal::result_type<Lhs>::type 
 	operator/(const Lhs& lhs, const mpreal& rhs){ return mpreal(lhs) /= rhs;	}
-
-// < 
-template <typename Rhs> 
-inline const typename internal::bool_result_type<mpreal, Rhs>::type 
-	operator<(const mpreal& lhs, const Rhs& rhs){ return lhs < mpreal(rhs);	}
-
-template <typename Lhs> 
-inline const typename internal::bool_result_type<Lhs, mpreal>::type 
-	operator<(const Lhs& lhs, const mpreal& rhs){ return mpreal(lhs) < rhs;	}
-
-// <=
-template <typename Rhs> 
-inline const typename internal::bool_result_type<mpreal, Rhs>::type 
-	operator<=(const mpreal& lhs, const Rhs& rhs){ return lhs <= mpreal(rhs);	}
-
-template <typename Lhs> 
-inline const typename internal::bool_result_type<Lhs, mpreal>::type 
-	operator<=(const Lhs& lhs, const mpreal& rhs){ return mpreal(lhs) <= rhs;	}
-
-// >
-template <typename Rhs> 
-inline const typename internal::bool_result_type<mpreal, Rhs>::type 
-	operator>(const mpreal& lhs, const Rhs& rhs){ return lhs > mpreal(rhs);	}
-
-template <typename Lhs> 
-inline const typename internal::bool_result_type<Lhs, mpreal>::type 
-	operator>(const Lhs& lhs, const mpreal& rhs){ return mpreal(lhs) > rhs;	}
-
-// >=
-template <typename Rhs> 
-inline const typename internal::bool_result_type<mpreal, Rhs>::type 
-	operator>=(const mpreal& lhs, const Rhs& rhs){ return lhs >= mpreal(rhs);	}
-
-template <typename Lhs> 
-inline const typename internal::bool_result_type<Lhs, mpreal>::type 
-	operator>=(const Lhs& lhs, const mpreal& rhs){ return mpreal(lhs) >= rhs;	}
-
-// ==
-template <typename Rhs> 
-inline const typename internal::bool_result_type<mpreal, Rhs>::type 
-	operator==(const mpreal& lhs, const Rhs& rhs){ return lhs == mpreal(rhs);	}
-
-template <typename Lhs> 
-inline const typename internal::bool_result_type<Lhs, mpreal>::type 
-	operator==(const Lhs& lhs, const mpreal& rhs){ return mpreal(lhs) == rhs;	}
-
-// !=
-template <typename Rhs> 
-inline const typename internal::bool_result_type<mpreal, Rhs>::type 
-	operator!=(const mpreal& lhs, const Rhs& rhs){ return lhs != mpreal(rhs);	}
-
-template <typename Lhs> 
-inline const typename internal::bool_result_type<Lhs, mpreal>::type 
-	operator!=(const Lhs& lhs, const mpreal& rhs){ return mpreal(lhs) != rhs;	}
 
 //////////////////////////////////////////////////////////////////////////
 // sqrt
@@ -1455,119 +1368,37 @@ inline const mpreal div_2si(const mpreal& v, long int k, mp_rnd_t rnd_mode)
 
 //////////////////////////////////////////////////////////////////////////
 //Boolean operators
-inline bool operator > (const mpreal& a, const mpreal& b)
-{
-	return (mpfr_greater_p(a.mp,b.mp)!=0);
-}
+inline bool operator >	(const mpreal& a, const mpreal& b){	return (mpfr_greater_p(a.mp,b.mp)		!=0);	}
+inline bool operator >= (const mpreal& a, const mpreal& b){	return (mpfr_greaterequal_p(a.mp,b.mp)	!=0);	}
+inline bool operator <  (const mpreal& a, const mpreal& b){	return (mpfr_less_p(a.mp,b.mp)			!=0);	}
+inline bool operator <= (const mpreal& a, const mpreal& b){	return (mpfr_lessequal_p(a.mp,b.mp)		!=0);	}
+inline bool operator == (const mpreal& a, const mpreal& b){	return (mpfr_equal_p(a.mp,b.mp)			!=0);	}
+inline bool operator != (const mpreal& a, const mpreal& b){	return (mpfr_lessgreater_p(a.mp,b.mp)	!=0);	}
 
-inline bool operator >= (const mpreal& a, const mpreal& b)
-{
-	return (mpfr_greaterequal_p(a.mp,b.mp)!=0);
-}
+inline bool operator == (const mpreal& a, const unsigned long int b	){	return (mpfr_cmp_ui(a.mp,b) == 0);	}
+inline bool operator == (const mpreal& a, const unsigned int b		){	return (mpfr_cmp_ui(a.mp,b) == 0);	}
+inline bool operator == (const mpreal& a, const long int b			){	return (mpfr_cmp_si(a.mp,b) == 0);	}
+inline bool operator == (const mpreal& a, const int b				){	return (mpfr_cmp_si(a.mp,b) == 0);	}
+inline bool operator == (const mpreal& a, const long double b		){	return (mpfr_cmp_ld(a.mp,b) == 0);	}
+inline bool operator == (const mpreal& a, const double b			){	return (mpfr_cmp_d(a.mp,b)  == 0);	}
 
-inline bool operator <  (const mpreal& a, const mpreal& b)
-{
-	return (mpfr_less_p(a.mp,b.mp)!=0);
-}
 
-inline bool operator <= (const mpreal& a, const mpreal& b)
-{
-	return (mpfr_lessequal_p(a.mp,b.mp)!=0);
-}
-
-inline bool operator == (const mpreal& a, const mpreal& b)
-{
-	return (mpfr_equal_p(a.mp,b.mp)!=0);
-}
-
-inline bool operator ==  (const mpreal& a, const unsigned long int b)
-{
-	return (mpfr_cmp_ui(a.mp,b) == 0);
-}
-
-inline bool operator ==  (const mpreal& a, const unsigned int b)
-{
-	return (mpfr_cmp_ui(a.mp,b) == 0);
-}
-
-inline bool operator ==  (const mpreal& a, const long int b)
-{
-	return (mpfr_cmp_si(a.mp,b) == 0);
-}
-
-inline bool operator ==  (const mpreal& a, const int b)
-{
-	return (mpfr_cmp_si(a.mp,b) == 0);
-}
-
-inline bool operator ==  (const mpreal& a, const long double b)
-{
-	return (mpfr_cmp_ld(a.mp,b) == 0);
-}
-
-inline bool operator ==  (const mpreal& a, const double b)
-{
-	return (mpfr_cmp_d(a.mp,b) == 0);
-}
-
-inline bool operator != (const mpreal& a, const mpreal& b)
-{
-	return (mpfr_lessgreater_p(a.mp,b.mp)!=0);
-}
-
-inline bool isnan(const mpreal& v)
-{
-	return (mpfr_nan_p(v.mp)!=0);
-}
-
-inline bool isinf(const mpreal& v)
-{
-	return (mpfr_inf_p(v.mp)!=0);
-}
-
-inline bool isfinite(const mpreal& v)
-{
-	return (mpfr_number_p(v.mp)!=0);
-}
-
-inline bool iszero(const mpreal& v)
-{
-	return (mpfr_zero_p(v.mp)!=0);
-}
-
-inline bool isint(const mpreal& v)
-{
-	return (mpfr_integer_p(v.mp) != 0);
-}
+inline bool isnan	(const mpreal& v){	return (mpfr_nan_p(v.mp)		!= 0);	}
+inline bool isinf	(const mpreal& v){	return (mpfr_inf_p(v.mp)		!= 0);	}
+inline bool isfinite(const mpreal& v){	return (mpfr_number_p(v.mp)		!= 0);	}
+inline bool iszero	(const mpreal& v){	return (mpfr_zero_p(v.mp)		!= 0);	}
+inline bool isint	(const mpreal& v){	return (mpfr_integer_p(v.mp)	!= 0);	}
 
 #if (MPFR_VERSION >= MPFR_VERSION_NUM(3,0,0))
-inline bool isregular(const mpreal& v)
-{
-	return (mpfr_regular_p(v.mp));
-}
-#endif // MPFR 3.0.0 Specifics
+inline bool isregular(const mpreal& v){	return (mpfr_regular_p(v.mp));}
+#endif 
 
 //////////////////////////////////////////////////////////////////////////
 // Type Converters
-long inline mpreal::toLong() const
-{
-	return mpfr_get_si(mp,GMP_RNDZ);	
-}
-
-unsigned long inline mpreal::toULong() const
-{
-	return mpfr_get_ui(mp,GMP_RNDZ);	
-}
-
-double inline mpreal::toDouble() const
-{
-	return mpfr_get_d(mp,default_rnd);
-}
-
-long double  inline mpreal::toLDouble() const
-{
-	return mpfr_get_ld(mp,default_rnd);
-}
+inline long				mpreal::toLong()	const	{	return mpfr_get_si(mp,GMP_RNDZ);	}
+inline unsigned long	mpreal::toULong()	const	{	return mpfr_get_ui(mp,GMP_RNDZ);	}
+inline double			mpreal::toDouble()	const	{	return mpfr_get_d(mp,default_rnd);	}
+inline long double		mpreal::toLDouble()	const	{	return mpfr_get_ld(mp,default_rnd);	}
 
 #if defined (MPREAL_HAVE_INT64_SUPPORT)
 int64_t  inline mpreal::toInt64() const
