@@ -408,11 +408,6 @@ std::string toString(T t, std::ios_base & (*f)(std::ios_base&))
 	return oss.str();
 }
 
-mpreal::operator std::string() const
-{
-	return toString();
-}
-
 #if (MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0))
 
 std::string mpreal::toString(const std::string& format) const

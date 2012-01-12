@@ -291,9 +291,9 @@ public:
 	uint64_t		toUInt64()	const;
 #endif
 
-	// Raw pointers
-	mpfr_ptr	__mpfr_ptr();
-	mpfr_srcptr __mpfr_srcptr() const;
+	// Get raw pointers
+	::mpfr_ptr mpfr_ptr();
+	::mpfr_srcptr mpfr_srcptr() const;
 
 	// Convert mpreal to string with n significant digits in base b
 	// n = 0 -> convert with the maximum available digits 
@@ -302,8 +302,6 @@ public:
 #if (MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0))
 	std::string		toString(const std::string& format) const;
 #endif
-
-	operator std::string() const;
 
 	// Math Functions
 	friend const mpreal sqr	(const mpreal& v, mp_rnd_t rnd_mode = mpreal::default_rnd);
@@ -1401,26 +1399,12 @@ inline double			mpreal::toDouble()	const	{	return mpfr_get_d(mp,default_rnd);	}
 inline long double		mpreal::toLDouble()	const	{	return mpfr_get_ld(mp,default_rnd);	}
 
 #if defined (MPREAL_HAVE_INT64_SUPPORT)
-int64_t  inline mpreal::toInt64() const
-{
-	return mpfr_get_sj(mp,GMP_RNDZ);	
-}
-
-uint64_t  inline mpreal::toUInt64() const
-{
-	return mpfr_get_uj(mp,GMP_RNDZ);	
-}
+inline int64_t	 mpreal::toInt64()	const{	return mpfr_get_sj(mp,GMP_RNDZ);	}
+inline uint64_t	 mpreal::toUInt64()	const{	return mpfr_get_uj(mp,GMP_RNDZ);	}
 #endif
 
-mpfr_ptr inline mpreal::__mpfr_ptr()
-{
-	return mp;
-}
-
-mpfr_srcptr inline mpreal::__mpfr_srcptr() const
-{
-	return const_cast<mpfr_srcptr>(mp);
-}
+inline ::mpfr_ptr		mpreal::mpfr_ptr()			{	return mp;	}
+inline ::mpfr_srcptr	mpreal::mpfr_srcptr() const	{	return const_cast<::mpfr_srcptr>(mp);	}
 
 //////////////////////////////////////////////////////////////////////////
 // 	Bits - decimal digits relation
