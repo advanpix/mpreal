@@ -1404,7 +1404,7 @@ inline uint64_t	 mpreal::toUInt64()	const{	return mpfr_get_uj(mp,GMP_RNDZ);	}
 #endif
 
 inline ::mpfr_ptr		mpreal::mpfr_ptr()			{	return mp;	}
-inline ::mpfr_srcptr	mpreal::mpfr_srcptr() const	{	return const_cast<::mpfr_srcptr>(mp);	}
+inline ::mpfr_srcptr	mpreal::mpfr_srcptr() const	{	return const_cast< ::mpfr_srcptr >(mp);	}
 
 //////////////////////////////////////////////////////////////////////////
 // 	Bits - decimal digits relation
