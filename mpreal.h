@@ -97,8 +97,10 @@
 															// Someone should change this manually if needed.
 		#endif
 	#endif
-
-	#if defined (__GNUC__)
+	
+	#if defined (__MINGW32__) || defined(__MINGW64__)
+			#include <stdint.h>								// equivalent to msvc2010
+	#elif defined (__GNUC__)
 		#if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64)
 			#undef MPREAL_HAVE_INT64_SUPPORT				// remove all shaman dances for x64 builds since
 			#undef MPFR_USE_INTMAX_T						// GCC already support x64 as of "long int" is 64-bit integer, nothing left to do
@@ -563,8 +565,8 @@ namespace internal{
 	template <> struct result_type<int>					{typedef mpreal type;};	
 
 #if defined (MPREAL_HAVE_INT64_SUPPORT)
-	template <> struct result_type<int64_t  >		{typedef mpreal type;};	
-	template <> struct result_type<uint64_t >		{typedef mpreal type;};	
+	template <> struct result_type<int64_t  >			{typedef mpreal type;};	
+	template <> struct result_type<uint64_t >			{typedef mpreal type;};	
 #endif
 }
 
@@ -1561,6 +1563,11 @@ inline bool isEqualUlps(const mpreal& a, const mpreal& b, int maxUlps)
 inline bool isEqualFuzzy(const mpreal& a, const mpreal& b, const mpreal& eps)
 {
 	return abs(a - b) <= (min)(abs(a), abs(b)) * eps;
+}
+
+inline bool isEqualFuzzy(const mpreal& a, const mpreal& b)
+{
+	return isEqualFuzzy(a,b,machine_epsilon((std::min)(abs(a), abs(b))));
 }
 
 inline const mpreal modf(const mpreal& v, mpreal& n)
