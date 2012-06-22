@@ -67,8 +67,8 @@
 #include <cmath>
 
 // Options
-#define MPREAL_HAVE_INT64_SUPPORT							// int64_t support: available only for MSVC 2010 & GCC 
-#define MPREAL_HAVE_MSVC_DEBUGVIEW							// Enable Debugger Visualizer (valid only for MSVC in "Debug" builds)
+#define MPREAL_HAVE_INT64_SUPPORT							// Enable int64_t support if possible. Available only for MSVC 2010 & GCC. 
+#define MPREAL_HAVE_MSVC_DEBUGVIEW							// Enable Debugger Visualizer for "Debug" builds in MSVC.
 
 // Detect compiler using signatures from http://predef.sourceforge.net/
 #if defined(__GNUC__) && defined(__INTEL_COMPILER)
@@ -112,8 +112,8 @@
 #endif 
 
 #if defined(MPREAL_HAVE_MSVC_DEBUGVIEW) && defined(_MSC_VER) && defined(_DEBUG)
-#define MPREAL_MSVC_DEBUGVIEW_CODE 		DebugView = toString()
-	#define MPREAL_MSVC_DEBUGVIEW_DATA 	std::string DebugView
+#define MPREAL_MSVC_DEBUGVIEW_CODE 		DebugView = toString();
+	#define MPREAL_MSVC_DEBUGVIEW_DATA 	std::string DebugView;
 #else
 	#define MPREAL_MSVC_DEBUGVIEW_CODE 
 	#define MPREAL_MSVC_DEBUGVIEW_DATA 
@@ -293,7 +293,7 @@ public:
 	uint64_t		toUInt64()	const;
 #endif
 
-	// Get raw pointers
+	// Get raw pointers so that mpreal can correctly be used in raw mpfr_* functions
 	::mpfr_ptr mpfr_ptr();
 	::mpfr_srcptr mpfr_srcptr() const;
 
@@ -508,11 +508,9 @@ public:
 	static int			set_emin (mp_exp_t exp);
 	static int			set_emax (mp_exp_t exp);
 
-	// Efficient swapping of two mpreal values
+	// Efficient swapping of two mpreal values - needed for std algorithms
 	friend void swap(mpreal& x, mpreal& y);
 	
-	//Min Max - macros is evil. Needed for systems which defines max and min globally as macros (e.g. Windows)
-	//Hope that globally defined macros use > < operations only
 	friend const mpreal fmax(const mpreal& x, const mpreal& y, mp_rnd_t rnd_mode = default_rnd);
 	friend const mpreal fmin(const mpreal& x, const mpreal& y, mp_rnd_t rnd_mode = default_rnd);
 
@@ -538,7 +536,7 @@ private:
 	// 
 	// at the beginning of
 	// [Visual Studio Installation Folder]\Common7\Packages\Debugger\autoexp.dat
-	MPREAL_MSVC_DEBUGVIEW_DATA;
+	MPREAL_MSVC_DEBUGVIEW_DATA
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -551,7 +549,7 @@ public:
 namespace internal{
 
 	// Use SFINAE to restrict arithmetic operations instantiation only for numeric types
-	// This is needed for smooth integration with libraries based on expression templates
+	// This is needed for smooth integration with libraries based on expression templates, like Eigen.
 	template <typename ArgumentType> struct result_type {};	
 	
 	template <> struct result_type<mpreal>				{typedef mpreal type;};	
@@ -669,28 +667,37 @@ const mpreal pow(const double a, const int b, mp_rnd_t rnd_mode = mpreal::defaul
 //////////////////////////////////////////////////////////////////////////
 // Estimate machine epsilon for the given precision
 // Returns smallest eps such that 1.0 + eps != 1.0
-inline const mpreal machine_epsilon(mp_prec_t prec = mpreal::get_default_prec());
+inline const mpreal machine_epsilon(mp_prec_t bits = mpreal::get_default_prec(), mp_prec_t resultPrecision = mpreal::get_default_prec());
 
 //  Returns the positive distance from abs(x) to the next larger in magnitude floating point number of the same precision as x
 inline const mpreal machine_epsilon(const mpreal& x);		
 
+// Gives max & min values for the required precision
 inline const mpreal mpreal_min(mp_prec_t prec = mpreal::get_default_prec());
 inline const mpreal mpreal_max(mp_prec_t prec = mpreal::get_default_prec());
+
+// 'Dirty' equality check 1: |a-b| < min{|a|,|b|} * eps
 inline bool isEqualFuzzy(const mpreal& a, const mpreal& b, const mpreal& eps);
+
+// 'Dirty' equality check 2: |a-b| < min{|a|,|b|} * eps( min{|a|,|b|} )
+inline bool isEqualFuzzy(const mpreal& a, const mpreal& b);
+
+// 'Bitwise' equality check
+//  maxUlps - a and b can be apart by maxUlps binary numbers. 
 inline bool isEqualUlps(const mpreal& a, const mpreal& b, int maxUlps);
 
 //////////////////////////////////////////////////////////////////////////
-// 	Bits - decimal digits relation
+// 	Convert precision in 'bits' in decimal digits and vice versa.
 //		bits   = ceil(digits*log[2](10))
 //		digits = floor(bits*log[10](2))
 
 inline mp_prec_t digits2bits(int d);
-inline int bits2digits(mp_prec_t b);
+inline int		 bits2digits(mp_prec_t b);
 
 //////////////////////////////////////////////////////////////////////////
 // min, max
-const mpreal max(const mpreal& x, const mpreal& y);
-const mpreal min(const mpreal& x, const mpreal& y);
+const mpreal (max)(const mpreal& x, const mpreal& y);
+const mpreal (min)(const mpreal& x, const mpreal& y);
 
 //////////////////////////////////////////////////////////////////////////
 // Implementation
@@ -1417,18 +1424,14 @@ inline mp_prec_t digits2bits(int d)
 {
 	const double LOG2_10 = 3.3219280948873624;
 
-	d = 10>d?10:d;
-
-	return (mp_prec_t)std::ceil((d)*LOG2_10);
+	return (mp_prec_t) std::ceil( d * LOG2_10 );
 }
 
 inline int bits2digits(mp_prec_t b)
 {
 	const double LOG10_2 = 0.30102999566398119;
 
-	b = 34>b?34:b;
-
-	return (int)std::floor((b)*LOG10_2);
+	return (int) std::floor( b * LOG10_2 );
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1441,7 +1444,7 @@ inline int sgn(const mpreal& v)
 
 inline mpreal& mpreal::setSign(int sign, mp_rnd_t RoundingMode)
 {
-	mpfr_setsign(mp,mp,(sign<0?1:0),RoundingMode);
+	mpfr_setsign(mp,mp,(sign < 0 ? 1 : 0),RoundingMode);
 	MPREAL_MSVC_DEBUGVIEW_CODE;
 	return *this;
 }
@@ -1474,7 +1477,14 @@ inline mpreal& mpreal::setNan()
 
 inline mpreal&	mpreal::setZero(int sign)
 {
-	mpfr_set_zero(mp,sign);
+
+#if (MPFR_VERSION >= MPFR_VERSION_NUM(3,0,0))
+	mpfr_set_zero(mp, sign);
+#else
+	mpfr_set_si(mp, 0, (mpfr_get_default_rounding_mode)());
+	setSign(sign);
+#endif 
+
 	MPREAL_MSVC_DEBUGVIEW_CODE;
 	return *this;
 }
@@ -1519,11 +1529,12 @@ inline const mpreal ldexp(const mpreal& v, mp_exp_t exp)
 	return x;
 }
 
-inline const mpreal machine_epsilon(mp_prec_t prec)
+inline const mpreal machine_epsilon(mp_prec_t bits, mp_prec_t resultPrecision)
 {
 	// the smallest eps such that 1.0+eps != 1.0
 	// depends (of cause) on the precision
-	return machine_epsilon(mpreal(1,prec));
+	mpreal eps = machine_epsilon(mpreal(1, bits));
+	return eps.setPrecision(resultPrecision);
 }
 
 inline const mpreal machine_epsilon(const mpreal& x)
@@ -1554,10 +1565,7 @@ inline const mpreal mpreal_max(mp_prec_t prec)
 
 inline bool isEqualUlps(const mpreal& a, const mpreal& b, int maxUlps)
 {
-  /*
-   maxUlps - a and b can be apart by maxUlps binary numbers. 
-  */
-  return abs(a - b) <= machine_epsilon(max(abs(a), abs(b))) * maxUlps;
+  return abs(a - b) <= machine_epsilon((max)(abs(a), abs(b))) * maxUlps;
 }
 
 inline bool isEqualFuzzy(const mpreal& a, const mpreal& b, const mpreal& eps)
@@ -1567,7 +1575,7 @@ inline bool isEqualFuzzy(const mpreal& a, const mpreal& b, const mpreal& eps)
 
 inline bool isEqualFuzzy(const mpreal& a, const mpreal& b)
 {
-	return isEqualFuzzy(a,b,machine_epsilon((std::min)(abs(a), abs(b))));
+	return isEqualFuzzy(a, b, machine_epsilon((min)(abs(a), abs(b))));
 }
 
 inline const mpreal modf(const mpreal& v, mpreal& n)
