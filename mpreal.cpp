@@ -72,7 +72,7 @@ using std::istream;
 
 namespace mpfr{
 
-mp_rnd_t   mpreal::default_rnd  = MPFR_RNDN;	//(mpfr_get_default_rounding_mode)();	
+mp_rnd_t   mpreal::default_rnd  = GMP_RNDN;	//(mpfr_get_default_rounding_mode)();	
 mp_prec_t  mpreal::default_prec = 64;			//(mpfr_get_default_prec)();	
 int		   mpreal::default_base = 10;
 int        mpreal::double_bits = -1;
