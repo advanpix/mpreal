@@ -1,0 +1,14 @@
+##mpfrc++
+
+AC_INIT([mpfrc++], [0])
+
+AM_INIT_AUTOMAKE
+
+AC_PROG_CXX
+LT_INIT
+
+AC_CHECK_HEADERS([mpfr.h])
+AC_CHECK_HEADERS([gmp.h])
+
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
