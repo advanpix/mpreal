@@ -689,6 +689,7 @@ am__isrc
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
+MPFRCPP_SO_VERSION
 target_alias
 host_alias
 build_alias
@@ -2302,6 +2303,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
+MPFRCPP_SO_VERSION=0:0:0
 
 am__api_version='1.11'
 

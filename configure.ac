@@ -1,7 +1,7 @@
 ##mpfrc++
 
 AC_INIT([mpfrc++], [0])
-
+AC_SUBST([MPFRCPP_SO_VERSION], [0:0:0])
 AM_INIT_AUTOMAKE
 
 AC_PROG_CXX
