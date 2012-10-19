@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
     const mpreal minval      =    std::numeric_limits<mpreal>::min();
     const mpreal small       =    one / maxval;
     const mpreal sfmin       =    (small > minval) ? small * (one + eps) : minval;
-    const mpreal round       =    std::numeric_limits<mpreal>::round_style;
+    const mpreal round       =    std::numeric_limits<mpreal>::round_style();
     const int    min_exp     =    std::numeric_limits<mpreal>::min_exponent;
     const mpreal underflow   =    std::numeric_limits<mpreal>::min();
     const int    max_exp     =    std::numeric_limits<mpreal>::max_exponent;
