@@ -3176,8 +3176,21 @@ namespace std
         static const bool traps             = true;
         static const bool tinyness_before   = true;
 
-        static const float_denorm_style has_denorm = denorm_absent;
-        static const float_round_style round_style = round_to_nearest;
+        static const float_denorm_style has_denorm  = denorm_absent;
+		
+		inline static float_round_style round_style(mp_prec_t precision = mpfr::mpreal::get_default_prec())
+		{
+			mp_rnd_t r = mpfr::mpreal::get_default_rnd();
+
+			switch (r)
+			{
+				case MPFR_RNDN: return round_to_nearest;
+				case MPFR_RNDZ: return round_toward_zero; 
+				case MPFR_RNDU: return round_toward_infinity; 
+				case MPFR_RNDD: return round_toward_neg_infinity; 
+				default: return round_indeterminate;
+			}
+		}
 
         inline static mpfr::mpreal min(mp_prec_t precision = mpfr::mpreal::get_default_prec())
         {
@@ -3210,7 +3223,10 @@ namespace std
 
         inline static mpfr::mpreal round_error(mp_prec_t precision = mpfr::mpreal::get_default_prec())
         {
-            return mpfr::mpreal(0.5, precision); 
+			mp_rnd_t r = mpfr::mpreal::get_default_rnd();
+
+			if(r == MPFR_RNDN) return mpfr::mpreal(0.5, precision); 
+			else               return mpfr::mpreal(1.0, precision);	
         }
 
         inline static const mpfr::mpreal infinity()         { return mpfr::const_infinity();     }
