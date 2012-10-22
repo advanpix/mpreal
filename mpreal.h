@@ -832,7 +832,7 @@ inline bool isEqualUlps(const mpreal& a, const mpreal& b, int maxUlps);
 //        digits = floor(bits*log[10](2))
 
 inline mp_prec_t digits2bits(int d);
-inline int         bits2digits(mp_prec_t b);
+inline int       bits2digits(mp_prec_t b);
 
 //////////////////////////////////////////////////////////////////////////
 // min, max
@@ -3152,6 +3152,7 @@ inline const mpreal pow(const double a, const int b, mp_rnd_t rnd_mode)
 // Non-throwing swap C++ idiom: http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Non-throwing_swap
 namespace std
 {
+	// only allowed to extend namespace std with specializations
     template <>
     inline void swap(mpfr::mpreal& x, mpfr::mpreal& y) 
     { 
@@ -3194,34 +3195,15 @@ namespace std
             }
         }
 
-        inline static mpfr::mpreal min(mp_prec_t precision = mpfr::mpreal::get_default_prec())
-        {
-            // min = 1/2*2^emin = 2^(emin-1)
-            return mpfr::mpreal(1, precision) << mpfr::mpreal::get_emin()-1; 
-        }
+        inline static mpfr::mpreal min    (mp_prec_t precision = mpfr::mpreal::get_default_prec()) {  return  mpfr::minval(precision);  }
+        inline static mpfr::mpreal max    (mp_prec_t precision = mpfr::mpreal::get_default_prec()) {  return  mpfr::maxval(precision);  }
+        inline static mpfr::mpreal lowest (mp_prec_t precision = mpfr::mpreal::get_default_prec()) {  return -mpfr::maxval(precision);  }
 
-        inline static mpfr::mpreal lowest(mp_prec_t precision = mpfr::mpreal::get_default_prec())
-        {
-            return (-(max)(precision));
-        }
-
-        inline static mpfr::mpreal max(mp_prec_t precision = mpfr::mpreal::get_default_prec())
-        {
-            // max = (1-eps)*2^emax, eps is machine epsilon 
-            return (mpfr::mpreal(1, precision) - epsilon(precision)) << mpfr::mpreal::get_emax(); 
-        }
-
-        inline static mpfr::mpreal epsilon(mp_prec_t precision = mpfr::mpreal::get_default_prec())
-        {
-            // machine epsilon, the smallest eps such that 1.0+eps != 1.0
-            return epsilon(mpfr::mpreal(1, precision));     
-        }
-
-        inline static mpfr::mpreal epsilon(const mpfr::mpreal& x)
-        {
-            // relative machine epsilon, the smallest eps such that x + eps != x
-            return (x < 0) ? nextabove(-x) + x : nextabove(x)-x;
-        }
+        // Returns smallest eps such that 1 + eps != 1 (classic machine epsilon)
+        inline static mpfr::mpreal epsilon(mp_prec_t precision = mpfr::mpreal::get_default_prec()) {  return  mpfr::machine_epsilon(precision); }
+		
+        // Returns smallest eps such that x + eps != x (relative machine epsilon)
+	inline static mpfr::mpreal epsilon(const mpfr::mpreal& x) {  return mpfr::machine_epsilon(x);  }
 
         inline static mpfr::mpreal round_error(mp_prec_t precision = mpfr::mpreal::get_default_prec())
         {
