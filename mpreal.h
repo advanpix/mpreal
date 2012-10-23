@@ -592,15 +592,19 @@ inline mpreal::mpreal(const mpq_t u, mp_prec_t prec, mp_rnd_t mode)
 
 inline mpreal::mpreal(const double u, mp_prec_t prec, mp_rnd_t mode)
 {
-    if(MPREAL_DOUBLE_BITS_OVERFLOW == -1 || fits_in_bits(u, MPREAL_DOUBLE_BITS_OVERFLOW))
-    {
-        mpfr_init2(mp,prec);
-        mpfr_set_d(mp,u,mode);
+     mpfr_init2(mp, prec);
 
-        MPREAL_MSVC_DEBUGVIEW_CODE;
-    }
-    else
-        throw conversion_overflow();
+#if (MPREAL_DOUBLE_BITS_OVERFLOW > -1)
+	if(fits_in_bits(u, MPREAL_DOUBLE_BITS_OVERFLOW))
+	{
+		mpfr_set_d(mp, u, mode);
+	}else
+		throw conversion_overflow();
+#else
+	mpfr_set_d(mp, u, mode);
+#endif
+
+    MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
 inline mpreal::mpreal(const long double u, mp_prec_t prec, mp_rnd_t mode)
@@ -849,8 +853,14 @@ inline mpreal& mpreal::operator=(const mpreal& v)
 {
     if (this != &v)
     {
-        mpfr_clear(mp);
-        mpfr_init2(mp, mpfr_get_prec(v.mp));
+		mp_prec_t tp = mpfr_get_prec(mp);
+		mp_prec_t vp = mpfr_get_prec(v.mp);
+
+		if(tp != vp){
+			mpfr_clear(mp);
+			mpfr_init2(mp, vp);
+		}
+
         mpfr_set(mp, v.mp, mpreal::get_default_rnd());
 
         MPREAL_MSVC_DEBUGVIEW_CODE;
@@ -891,16 +901,18 @@ inline mpreal& mpreal::operator=(const long double v)
 }
 
 inline mpreal& mpreal::operator=(const double v)                
-{    
-    if(MPREAL_DOUBLE_BITS_OVERFLOW == -1 || fits_in_bits(v, MPREAL_DOUBLE_BITS_OVERFLOW))
-    {
-        mpfr_set_d(mp,v,mpreal::get_default_rnd());
+{   
+#if (MPREAL_DOUBLE_BITS_OVERFLOW > -1)
+	if(fits_in_bits(v, MPREAL_DOUBLE_BITS_OVERFLOW))
+	{
+		mpfr_set_d(mp,v,mpreal::get_default_rnd());
+	}else
+		throw conversion_overflow();
+#else
+	mpfr_set_d(mp,v,mpreal::get_default_rnd());
+#endif
 
-        MPREAL_MSVC_DEBUGVIEW_CODE;
-    }
-    else
-        throw conversion_overflow();
-
+	MPREAL_MSVC_DEBUGVIEW_CODE;
     return *this;
 }
 
