@@ -856,7 +856,7 @@ inline mpreal& mpreal::operator=(const mpreal& v)
 		mp_prec_t tp = mpfr_get_prec(mp);
 		mp_prec_t vp = mpfr_get_prec(v.mp);
 
-		if(tp != vp){
+		if(tp < vp){
 			mpfr_clear(mp);
 			mpfr_init2(mp, vp);
 		}
@@ -3207,9 +3207,9 @@ namespace std
             }
         }
 
-        inline static mpfr::mpreal min    (mp_prec_t precision = mpfr::mpreal::get_default_prec()) {  return  mpfr::minval(precision);  }
-        inline static mpfr::mpreal max    (mp_prec_t precision = mpfr::mpreal::get_default_prec()) {  return  mpfr::maxval(precision);  }
-        inline static mpfr::mpreal lowest (mp_prec_t precision = mpfr::mpreal::get_default_prec()) {  return -mpfr::maxval(precision);  }
+        inline static mpfr::mpreal (min)    (mp_prec_t precision = mpfr::mpreal::get_default_prec()) {  return  mpfr::minval(precision);  }
+        inline static mpfr::mpreal (max)    (mp_prec_t precision = mpfr::mpreal::get_default_prec()) {  return  mpfr::maxval(precision);  }
+        inline static mpfr::mpreal lowest   (mp_prec_t precision = mpfr::mpreal::get_default_prec()) {  return -mpfr::maxval(precision);  }
 
         // Returns smallest eps such that 1 + eps != 1 (classic machine epsilon)
         inline static mpfr::mpreal epsilon(mp_prec_t precision = mpfr::mpreal::get_default_prec()) {  return  mpfr::machine_epsilon(precision); }
