@@ -100,7 +100,7 @@
             #include <stdint.h>                 // Equivalent to msvc2010
 
     #elif defined (__GNUC__)
-        #if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64)
+        #if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64) || defined(__ia64) || defined(__itanium__) || defined(_M_IA64)
             #undef MPREAL_HAVE_INT64_SUPPORT    // Remove all shaman dances for x64 builds since
             #undef MPFR_USE_INTMAX_T            // GCC already supports x64 as of "long int" is 64-bit integer, nothing left to do
         #else
