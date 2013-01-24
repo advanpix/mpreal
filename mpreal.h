@@ -1325,12 +1325,12 @@ inline mpreal& mpreal::operator*=(const int v)
     return *this;
 }
 
-
 inline const mpreal operator*(const mpreal& a, const mpreal& b)
 {
-    // prec(a*b) = max(prec(a),prec(b))
-    if(a.getPrecision() >= b.getPrecision())    return   mpreal(a) *= b;
-    else                                        return   mpreal(b) *= a;        
+    mpreal res;
+    res.setPrecision(std::max(a.getPrecision(), b.getPrecision()));
+    mpfr_mul(res.mpfr_ptr(), a.mpfr_ptr(), b.mpfr_ptr(), mpreal::get_default_rnd());
+    return res;
 }
 
 //////////////////////////////////////////////////////////////////////////
