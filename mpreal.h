@@ -305,7 +305,9 @@ public:
 #endif
 
     // Get raw pointers so that mpreal can correctly be used in raw mpfr_* functions
+    typedef const __mpfr_struct *mpfr_constptr;
     ::mpfr_ptr mpfr_ptr();
+    mpfr_constptr mpfr_ptr() const;
     ::mpfr_srcptr mpfr_srcptr() const;
 
     // Convert mpreal to string with n significant digits in base b
@@ -1323,6 +1325,7 @@ inline mpreal& mpreal::operator*=(const int v)
     return *this;
 }
 
+
 inline const mpreal operator*(const mpreal& a, const mpreal& b)
 {
     // prec(a*b) = max(prec(a),prec(b))
@@ -1619,8 +1622,9 @@ inline int64_t      mpreal::toInt64 (mp_rnd_t mode)    const{    return mpfr_get
 inline uint64_t     mpreal::toUInt64(mp_rnd_t mode)    const{    return mpfr_get_uj(mp, mode);    }
 #endif
 
-inline ::mpfr_ptr       mpreal::mpfr_ptr()             {    return mp;    }
-inline ::mpfr_srcptr    mpreal::mpfr_srcptr() const    {    return const_cast< ::mpfr_srcptr >(mp);    }
+inline ::mpfr_ptr             mpreal::mpfr_ptr()             {    return mp;    }
+inline mpreal::mpfr_constptr  mpreal::mpfr_ptr() const       {    return mp;    }
+inline ::mpfr_srcptr          mpreal::mpfr_srcptr() const    {    return const_cast< ::mpfr_srcptr >(mp);    }
 
 template <class T>
 inline std::string toString(T t, std::ios_base & (*f)(std::ios_base&))
