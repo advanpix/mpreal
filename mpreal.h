@@ -86,26 +86,26 @@
     
     #define MPFR_USE_INTMAX_T                   // Should be defined before mpfr.h
 
-    #if defined(_MSC_VER)                       // <stdint.h> is available only in msvc2010!
+    #if defined(_MSC_VER)                       // MSVC + Windows
         #if (_MSC_VER >= 1600)                    
-            #include <stdint.h>                    
+            #include <stdint.h>                 // <stdint.h> is available only in msvc2010!
+
         #else                                   // MPFR relies on intmax_t which is available only in msvc2010
             #undef MPREAL_HAVE_INT64_SUPPORT    // Besides, MPFR & MPIR have to be compiled with msvc2010
             #undef MPFR_USE_INTMAX_T            // Since we cannot detect this, disable x64 by default
                                                 // Someone should change this manually if needed.
         #endif
-    #endif
-    
-    #if defined (__MINGW32__) || defined(__MINGW64__)
-            #include <stdint.h>                 // Equivalent to msvc2010
 
-    #elif defined (__GNUC__)
+    #elif defined (__GNUC__) && defined(__linux__)
         #if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64) || defined(__ia64) || defined(__itanium__) || defined(_M_IA64)
             #undef MPREAL_HAVE_INT64_SUPPORT    // Remove all shaman dances for x64 builds since
             #undef MPFR_USE_INTMAX_T            // GCC already supports x64 as of "long int" is 64-bit integer, nothing left to do
         #else
-            #include <stdint.h>                 // use int64_t, uint64_t otherwise.
+            #include <stdint.h>                 // use int64_t, uint64_t otherwise
         #endif
+
+    #else
+        #include <stdint.h>                     // rely on int64_t, uint64_t in all other cases, Mac OSX, etc.
     #endif
 
 #endif 
