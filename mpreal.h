@@ -93,7 +93,12 @@
 #if (__has_feature(cxx_rvalue_references) || \
     defined(__GXX_EXPERIMENTAL_CXX0X__) || \
     (defined(_MSC_VER) && _MSC_VER >= 1600))
+
 #define MPREAL_HAVE_MOVE_SUPPORT
+
+// Use fields in mpfr_t structure to check if it was initialized / set dummy initialization 
+#define mpfr_is_initialized(x)      (0 != (x)->_mpfr_d)
+#define mpfr_set_uninitialized(x)   ((x)->_mpfr_d = 0 )
 #endif
 
 // Detect available 64-bit capabilities
@@ -596,8 +601,7 @@ inline mpreal::mpreal(const mpreal& u)
 #ifdef MPREAL_HAVE_MOVE_SUPPORT
 inline mpreal::mpreal(mpreal&& other)
 {
-    mpfr_ptr()->_mpfr_d = 0;                // make sure "other" holds no pinter to actual data 
-
+    mpfr_set_uninitialized(mpfr_ptr());     // make sure "other" holds no pinter to actual data 
     mpfr_swap(mpfr_ptr(), other.mpfr_ptr());
 
     MPREAL_MSVC_DEBUGVIEW_CODE;
@@ -744,8 +748,7 @@ inline mpreal::mpreal(const std::string& s, mp_prec_t prec, int base, mp_rnd_t m
 
 inline void mpreal::clear(::mpfr_ptr x)
 {
-    // Use undocumented field in mpfr_t structure to check if it was initialized 
-    if(0 != x->_mpfr_d) mpfr_clear(x);
+    if(mpfr_is_initialized(x)) mpfr_clear(x);
 }
 
 inline mpreal::~mpreal() 
