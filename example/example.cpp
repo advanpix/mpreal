@@ -1,3 +1,42 @@
+/*
+    This file is part of MPFR C++.
+
+    MPFR C++: Multi-precision floating point number class for C++. 
+    Based on MPFR library:    http://mpfr.org
+
+    Project homepage:    http://www.holoborodko.com/pavel/mpfr
+    Contact e-mail:      pavel@holoborodko.com
+
+    Copyright (c) 2008-2013 Pavel Holoborodko
+
+    Contributors:
+    Dmitriy Gubanov, Konstantin Holoborodko, Brian Gladman, 
+    Helmut Jarausch, Fokko Beekhof, Ulrich Mutze, Heinz van Saanen, 
+    Pere Constans, Peter van Hoof, Gael Guennebaud, Tsai Chia Cheng, 
+    Alexei Zubanov, Jauhien Piatlicki, Victor Berger, John Westwood.
+
+    Licensing:
+    MPFR C++ library uses a "dual licensing" model.
+    Users may choose to use MPFR C++:
+    (a) under the open source GNU General Public License ("GPL") version 3,
+    (b) or under the case-by-case commercial license with prior arrangement with the author.
+    
+    GNU General Public License ("GPL") copyright permissions statement:
+    **************************************************************************
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include <iostream>
 #include "../mpreal.h"
 
