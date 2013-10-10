@@ -14,10 +14,18 @@
     Alexei Zubanov, Jauhien Piatlicki, Victor Berger, John Westwood.
 
     Licensing:
-    MPFR C++ library uses a "dual licensing" model.
-    Users may choose to use MPFR C++:
-    (a) under the open source GNU General Public License ("GPL") version 3,
-    (b) or under the case-by-case commercial license with prior arrangement with the author.
+    (A) MPFR C++ is under GNU General Public License ("GPL").
+    
+    (B) Non-free licenses may also be purchased from the author, for users who 
+        do not want their programs protected by the GPL.
+
+        The non-free licenses are for users that wish to use MPFR C++ in 
+        their products but are unwilling to release their software 
+        under the GPL (which would require them to release source code 
+        and allow free redistribution).
+
+        Such users can purchase an unlimited-use license from the author.
+        Contact us for more details.
     
     GNU General Public License ("GPL") copyright permissions statement:
     **************************************************************************
