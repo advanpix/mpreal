@@ -1,0 +1,279 @@
+2013-10-10  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* copying.txt:
+	Added GPL text as separate file
+	[d2450011629e] [tip]
+
+	* copying.txt, example/example.cpp, mpreal.h:
+	License terms clarification
+	[fe3b241512bb]
+
+2013-10-09  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* .hgtags:
+	Added tag 3.5.5 for changeset 26663a149dfc
+	[2efce445849a]
+
+2013-10-08  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* example/example.cpp:
+	Added copyright notice to example
+	[26663a149dfc] [3.5.5]
+
+	* copying.txt, mpreal.h:
+	Added "dual-licensing" terms
+	[13837c895076]
+
+	* mpreal.h:
+	Added wrappers for low-level initializations check
+	[bd04a7f7b521]
+
+2013-09-02  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Added move ctor / assignment, RVO optimization, compatibility with
+	older MPFR.
+	[72eac755d15c]
+
+2013-02-19  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Added macro-logic for int64_t support on Mac OS X
+	[1b0d6fdcf92f]
+
+2013-02-11  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Initialization overhead minimization in mathematical functions
+	[5c67b57960bd]
+
+2013-02-10  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Arithmetic operations speed up by RVO and overhead minimization
+	[c524bcccda1d]
+
+2013-01-24  Gael Guennebaud  <g.gael@free.fr>
+
+	* mpreal.h:
+	Enable compiler RVO in c = a + b;
+	[863750c996ff]
+
+	* mpreal.h:
+	Enable compiler RVO in c = a * b;
+	[4c502eded329]
+
+	* mpreal.h:
+	add a const version of mpfr_ptr
+	[fb4da131c3e6]
+
+	* mpreal.h:
+	Workaround "error: floating-point literal cannot appear in a
+	constant-expression" when compiling with gcc -pedantic
+	[e79dc5492ce5]
+
+2012-12-04  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Fixed 'long int' and 'int64_t' clash on IA64 platforms
+	[340d58c79215]
+
+2012-10-26  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Added work-around to avoid clash with min, max macroses in MSVC
+	[75a3a3a2bafd]
+
+2012-10-23  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Speed-up in assignment and conversion from double
+	[d40a2e23c6d7]
+
+2012-10-22  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Improved speciliazation for std::numeric_limits
+	[4ee2d33724d2]
+
+2012-10-21  Pavel Holoborodko  <Pavel Holoborodko@Advanpix>
+
+	* mpreal.h:
+	Fixed formatting, TAB to spaces
+	[f6db242a57d5]
+
+2012-10-19  Pavel Holoborodko  <Pavel Holoborodko@Advanpix>
+
+	* example/example.cpp, mpreal.h:
+	Changed round_style to function Fixed minor warnings Fixed
+	contributor list
+	[27b2cac5f626]
+
+2012-10-19  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Enhancement of std::numeric_limts<mpreal>, to be more compatible
+	with LAPACK Template LIbrary
+	[4e80c52d2bf4]
+
+	* mpreal.h:
+	Fixed messed up blank spaces
+	[bb97d60dc279]
+
+	* mpreal.h:
+	New one-header MPREAL library
+	[633ecbf6b601]
+
+	* AUTHORS, COPYING, ChangeLog, INSTALL, MPRealSupport, Makefile.am,
+	Makefile.in, NEWS, README, aclocal.m4, config.guess, config.sub,
+	configure, configure.ac, copying.lib, depcomp, example.cpp,
+	example.makefile, example/example.cpp, example/makefile, install-sh,
+	ltmain.sh, missing, mpreal.cpp, mpreal.h:
+	Complete update, old files clean up
+	[54439186de7b]
+
+2012-08-17  Jauhien Piatlicki  <piatlicki@gmail.com>
+
+	* Makefile.am, Makefile.in, configure, configure.ac:
+	correct so-version
+	[365e3a6bb539]
+
+	* autom4te.cache/output.0, autom4te.cache/output.1,
+	autom4te.cache/requests, autom4te.cache/traces.0,
+	autom4te.cache/traces.1:
+	rm autom4te.cache
+	[cfeb628317ea]
+
+	* AUTHORS, COPYING, ChangeLog, INSTALL, Makefile.am, Makefile.in,
+	NEWS, README, aclocal.m4, autom4te.cache/output.0,
+	autom4te.cache/output.1, autom4te.cache/requests,
+	autom4te.cache/traces.0, autom4te.cache/traces.1, config.guess,
+	config.sub, configure, configure.ac, copying, depcomp,
+	example.makefile, install-sh, ltmain.sh, makefile, missing:
+	building with autotools added
+	[210888972b8b]
+
+2012-06-22  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.cpp:
+	Replaced MPFR_RNDN to GMP_RNDN for compatibility
+	[7b9efa6bd2c0]
+
+	* mpreal.cpp, mpreal.h:
+	Extended machine_epsilon() Restored compatibility with MPFR 2.3.1
+	Code clean-up and simplifications by Gael Guennebaud Added comments
+	& explanations
+	[452b3e42ef1e]
+
+	* MPRealSupport:
+	Code clean up and simplification by Gael Guennebaud Added constants
+	and other features
+	[c054b3966fa6]
+
+	* dlmalloc.c, dlmalloc.h, makefile:
+	Removed dlmalloc library since it is optional
+	[9e88546ed3ba]
+
+2012-05-23  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* copying, copying.lib, example.cpp, makefile:
+	Added makefile, example.cpp and license
+	[d04cff7a41be]
+
+	* mpreal.h:
+	Added x64 support for MinGW64. Added "fuzzy" comparison
+	[da1927a4c53a]
+
+2012-01-16  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Fixed bug which in conversion to mpfr_srcptr
+	[88fa1ed2a7a5]
+
+2012-01-12  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.cpp, mpreal.h:
+	Fixed implicit conversion to mpfr_ptr/mpfr_srcptr and std::string
+	[a87b193a75ab]
+
+	* mpreal.h:
+	- removed unneeded templated comparison operators
+	 - code re-formatting
+	[d2167e612f81]
+
+2012-01-11  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.cpp, mpreal.h:
+	- fix many minor bugs, including DebugView update in unary
+	operations
+	- refactor binary operations as templated functions
+	- remove implicit conversion operators to raw pointers
+	- custom memory allocation is optional now.
+	[7b310de78559]
+
+2011-09-30  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.cpp, mpreal.h:
+	Fixed bug x-x = -0. Signed zeros are perfectly supported now.
+	toString() has been cleaned up. Fixed static members initialization
+	hell. Added Debug Preview for MSVC - Alexei Zubanov.
+	[4f8d7043bf92]
+
+2011-09-09  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.cpp, mpreal.h:
+	Disabled int64_t support for VC++ less than 2010 Added setZero().
+	Changed syntax of set_inf & set_nan.
+	[2ee44062b841]
+
+2011-09-05  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Fixed few warnings on unused parameter ‘rnd_mode’. Added conversion
+	operator mpfr_srcptr() Include <cstdlib> for compatibility with MPFR
+	< 3.0.0
+	[2faff5e271af]
+
+2011-08-26  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	fix typo in comment
+	[bd4bd7c0070f]
+
+	* mpreal.h:
+	disable MPFR_USE_INTMAX_T on x64 GCC builds
+	[4d311588a233]
+
+	* mpreal.h:
+	detect x64 GCC builds and disable uint64_t since long int is already
+	has 64-bits.
+	[446bb69c5e42]
+
+	* mpreal.cpp:
+	clean up size_t & int types usage
+	[2fdac1dc28fa]
+
+	* mpreal.cpp, mpreal.h:
+	- fixed urandom & sprintf_s - GCC compatibility
+	[9de48e3cfb9c]
+
+2011-08-25  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* inttypes.h, stdint.h:
+	removed unnecessary headers, needed for old MSVC
+	[53846e0ba5d9]
+
+	* mpreal.h:
+	cleaning up of x64 support, needs testing on GCC
+	[7711c5332b26]
+
+2011-08-24  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* MPRealSupport:
+	added NumTraits<mpreal> for smooth integration with Eigen
+	[860d3e3234a8]
+
+	* dlmalloc.c, dlmalloc.h, inttypes.h, mpreal.cpp, mpreal.h, stdint.h:
+	initial commit
+	[9123b6b7751e]
+
