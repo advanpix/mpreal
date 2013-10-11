@@ -78,7 +78,7 @@
 #endif
 
 #if (__has_feature(cxx_rvalue_references) || \
-    defined(__GXX_EXPERIMENTAL_CXX0X__) || \
+    defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L || \
     (defined(_MSC_VER) && _MSC_VER >= 1600))
 
 #define MPREAL_HAVE_MOVE_SUPPORT
@@ -735,7 +735,10 @@ inline mpreal::mpreal(const std::string& s, mp_prec_t prec, int base, mp_rnd_t m
 
 inline void mpreal::clear(::mpfr_ptr x)
 {
-    if(mpfr_is_initialized(x)) mpfr_clear(x);
+#ifdef MPREAL_HAVE_MOVE_SUPPORT
+    if(mpfr_is_initialized(x)) 
+#endif
+    mpfr_clear(x);
 }
 
 inline mpreal::~mpreal() 
