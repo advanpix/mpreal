@@ -1,8 +1,26 @@
+2013-10-11  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* .hgtags:
+	Added tag mpfrc++-3.5.6 for changeset 212d3bddf30c
+	[e15c90a30ce6] [tip]
+
+	* .hgtags, mpreal.h:
+	Added support for GCC 7.1 and above
+	[212d3bddf30c] [mpfrc++-3.5.6]
+
 2013-10-10  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* .hgtags:
+	Added tag mpfrc++-3.5.5 for changeset 101440e2b33d
+	[462681c3110d]
+
+	* changelog:
+	Added changelog
+	[101440e2b33d] [mpfrc++-3.5.5]
 
 	* copying.txt:
 	Added GPL text as separate file
-	[d2450011629e] [tip]
+	[d2450011629e]
 
 	* copying.txt, example/example.cpp, mpreal.h:
 	License terms clarification
