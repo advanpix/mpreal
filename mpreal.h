@@ -2478,7 +2478,7 @@ inline const mpreal urandomb (gmp_randstate_t& state)
     return x;
 }
 
-#if (MPFR_VERSION >= MPFR_VERSION_NUM(3,0,0))
+#if (MPFR_VERSION >= MPFR_VERSION_NUM(3,1,0))
 // use gmp_randinit_default() to init state, gmp_randclear() to clear
 inline const mpreal urandom (gmp_randstate_t& state, mp_rnd_t rnd_mode)
 {
