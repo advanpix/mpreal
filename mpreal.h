@@ -167,7 +167,7 @@ public:
     mpreal(const int u,               mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());
     
     // Construct mpreal from mpfr_t structure.
-    // shared = true allows to avoid deep copy, so that mpreal and 'u' shared same data & pointers.    
+    // shared = true allows to avoid deep copy, so that mpreal and 'u' share the same data & pointers.    
     mpreal(const mpfr_t  u, bool shared = false);   
 
 #if defined (MPREAL_HAVE_INT64_SUPPORT)
@@ -1255,7 +1255,7 @@ inline const mpreal mpreal::operator-()const
 
 inline const mpreal operator-(const mpreal& a, const mpreal& b)
 {
-	mpreal c(0, std::max(mpfr_get_prec(a.mpfr_ptr()), mpfr_get_prec(b.mpfr_ptr())));
+	mpreal c(0, (std::max)(mpfr_get_prec(a.mpfr_ptr()), mpfr_get_prec(b.mpfr_ptr())));
 	mpfr_sub(c.mpfr_ptr(), a.mpfr_srcptr(), b.mpfr_srcptr(), mpreal::get_default_rnd());
 	return c;
 }
@@ -1372,7 +1372,7 @@ inline mpreal& mpreal::operator*=(const int v)
 
 inline const mpreal operator*(const mpreal& a, const mpreal& b)
 {
-	mpreal c(0, std::max(mpfr_get_prec(a.mpfr_ptr()), mpfr_get_prec(b.mpfr_ptr())));
+	mpreal c(0, (std::max)(mpfr_get_prec(a.mpfr_ptr()), mpfr_get_prec(b.mpfr_ptr())));
 	mpfr_mul(c.mpfr_ptr(), a.mpfr_srcptr(), b.mpfr_srcptr(), mpreal::get_default_rnd());
 	return c;
 }
@@ -1448,7 +1448,7 @@ inline mpreal& mpreal::operator/=(const int v)
 
 inline const mpreal operator/(const mpreal& a, const mpreal& b)
 {
-	mpreal c(0, std::max(mpfr_get_prec(a.mpfr_ptr()), mpfr_get_prec(b.mpfr_ptr())));
+	mpreal c(0, (std::max)(mpfr_get_prec(a.mpfr_ptr()), mpfr_get_prec(b.mpfr_ptr())));
 	mpfr_div(c.mpfr_ptr(), a.mpfr_srcptr(), b.mpfr_srcptr(), mpreal::get_default_rnd());
 	return c;
 }
@@ -2634,13 +2634,13 @@ inline const mpreal pow(const unsigned int a, const mpreal& b, mp_rnd_t rnd_mode
 inline const mpreal pow(const long int a, const mpreal& b, mp_rnd_t rnd_mode)
 {
     if (a>=0)     return pow(static_cast<unsigned long int>(a),b,rnd_mode);
-    else        return pow(mpreal(a),b,rnd_mode);
+    else          return pow(mpreal(a),b,rnd_mode);
 }
 
 inline const mpreal pow(const int a, const mpreal& b, mp_rnd_t rnd_mode)
 {
     if (a>=0)     return pow(static_cast<unsigned long int>(a),b,rnd_mode);
-    else        return pow(mpreal(a),b,rnd_mode);
+    else          return pow(mpreal(a),b,rnd_mode);
 }
 
 inline const mpreal pow(const long double a, const mpreal& b, mp_rnd_t rnd_mode)
@@ -2669,13 +2669,13 @@ inline const mpreal pow(const unsigned long int a, const unsigned int b, mp_rnd_
 inline const mpreal pow(const unsigned long int a, const long int b, mp_rnd_t rnd_mode)
 {
     if(b>0)    return pow(a,static_cast<unsigned long int>(b),rnd_mode); //mpfr_ui_pow_ui
-    else    return pow(a,mpreal(b),rnd_mode); //mpfr_ui_pow
+    else       return pow(a,mpreal(b),rnd_mode); //mpfr_ui_pow
 }
 
 inline const mpreal pow(const unsigned long int a, const int b, mp_rnd_t rnd_mode)
 {
     if(b>0)    return pow(a,static_cast<unsigned long int>(b),rnd_mode); //mpfr_ui_pow_ui
-    else    return pow(a,mpreal(b),rnd_mode); //mpfr_ui_pow
+    else       return pow(a,mpreal(b),rnd_mode); //mpfr_ui_pow
 }
 
 inline const mpreal pow(const unsigned long int a, const long double b, mp_rnd_t rnd_mode)
