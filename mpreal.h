@@ -5,14 +5,14 @@
     Project homepage:    http://www.holoborodko.com/pavel/mpfr
     Contact e-mail:      pavel@holoborodko.com
 
-    Copyright (c) 2008-2013 Pavel Holoborodko
+    Copyright (c) 2008-2014 Pavel Holoborodko
 
     Contributors:
     Dmitriy Gubanov, Konstantin Holoborodko, Brian Gladman, 
     Helmut Jarausch, Fokko Beekhof, Ulrich Mutze, Heinz van Saanen, 
     Pere Constans, Peter van Hoof, Gael Guennebaud, Tsai Chia Cheng, 
     Alexei Zubanov, Jauhien Piatlicki, Victor Berger, John Westwood,
-    Petr Aleksandrov.
+    Petr Aleksandrov, Orion Poplawski.
 
     Licensing:
     (A) MPFR C++ is under GNU General Public License ("GPL").
@@ -105,7 +105,7 @@
         #endif
 
     #elif defined (__GNUC__) && defined(__linux__)
-        #if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64) || defined(__ia64) || defined(__itanium__) || defined(_M_IA64)
+        #if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64) || defined(__ia64) || defined(__itanium__) || defined(_M_IA64) || defined (__PPC64__)
             #undef MPREAL_HAVE_INT64_SUPPORT    // Remove all shaman dances for x64 builds since
             #undef MPFR_USE_INTMAX_T            // GCC already supports x64 as of "long int" is 64-bit integer, nothing left to do
         #else
