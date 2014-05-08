@@ -457,7 +457,7 @@ public:
     friend const mpreal const_catalan   (mp_prec_t prec, mp_rnd_t rnd_mode);
 
     // returns +inf iff sign>=0 otherwise -inf
-    friend const mpreal const_infinity(int sign, mp_prec_t prec, mp_rnd_t rnd_mode);
+    friend const mpreal const_infinity(int sign, mp_prec_t prec);
 
     // Output/ Input
     friend std::ostream& operator<<(std::ostream& os, const mpreal& v);
@@ -2399,7 +2399,7 @@ inline const mpreal const_catalan (mp_prec_t p = mpreal::get_default_prec(), mp_
     return x;
 }
 
-inline const mpreal const_infinity (int sign = 1, mp_prec_t p = mpreal::get_default_prec(), mp_rnd_t r = mpreal::get_default_rnd())
+inline const mpreal const_infinity (int sign = 1, mp_prec_t p = mpreal::get_default_prec())
 {
     mpreal x(0, p);
     mpfr_set_inf(x.mpfr_ptr(), sign);
