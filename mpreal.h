@@ -12,7 +12,7 @@
     Helmut Jarausch, Fokko Beekhof, Ulrich Mutze, Heinz van Saanen, 
     Pere Constans, Peter van Hoof, Gael Guennebaud, Tsai Chia Cheng, 
     Alexei Zubanov, Jauhien Piatlicki, Victor Berger, John Westwood,
-    Petr Aleksandrov, Orion Poplawski.
+    Petr Aleksandrov, Orion Poplawski, Charles Karney.
 
     Licensing:
     (A) MPFR C++ is under GNU General Public License ("GPL").
@@ -59,6 +59,15 @@
 // Options
 #define MPREAL_HAVE_INT64_SUPPORT               // Enable int64_t support if possible. Available only for MSVC 2010 & GCC. 
 #define MPREAL_HAVE_MSVC_DEBUGVIEW              // Enable Debugger Visualizer for "Debug" builds in MSVC.
+#define MPREAL_HAVE_DYNAMIC_STD_NUMERIC_LIMITS  // Enable extended std::numeric_limits<mpfr::mpreal> specialization.
+                                                // Meaning that "digits", "round_style" and similar members are defined as functions, not constants.
+                                                // See std::numeric_limits<mpfr::mpreal> at the end of the file for more information.
+
+// Library version
+#define MPREAL_VERSION_MAJOR 3
+#define MPREAL_VERSION_MINOR 5
+#define MPREAL_VERSION_PATCHLEVEL 7
+#define MPREAL_VERSION_STRING "3.5.7"
 
 // Detect compiler using signatures from http://predef.sourceforge.net/
 #if defined(__GNUC__) && defined(__INTEL_COMPILER)
@@ -2885,7 +2894,7 @@ inline const mpreal pow(const double a, const int b, mp_rnd_t rnd_mode)
 // Non-throwing swap C++ idiom: http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Non-throwing_swap
 namespace std
 {
-	// only allowed to extend namespace std with specializations
+	// we are allowed to extend namespace std with specializations only
     template <>
     inline void swap(mpfr::mpreal& x, mpfr::mpreal& y) 
     { 
@@ -2913,20 +2922,6 @@ namespace std
         static const bool tinyness_before   = true;
 
         static const float_denorm_style has_denorm  = denorm_absent;
-        
-        inline static float_round_style round_style()
-        {
-            mp_rnd_t r = mpfr::mpreal::get_default_rnd();
-
-            switch (r)
-            {
-                case GMP_RNDN: return round_to_nearest;
-                case GMP_RNDZ: return round_toward_zero; 
-                case GMP_RNDU: return round_toward_infinity; 
-                case GMP_RNDD: return round_toward_neg_infinity; 
-                default: return round_indeterminate;
-            }
-        }
 
         inline static mpfr::mpreal (min)    (mp_prec_t precision = mpfr::mpreal::get_default_prec()) {  return  mpfr::minval(precision);  }
         inline static mpfr::mpreal (max)    (mp_prec_t precision = mpfr::mpreal::get_default_prec()) {  return  mpfr::maxval(precision);  }
@@ -2957,7 +2952,27 @@ namespace std
         MPREAL_PERMISSIVE_EXPR static const int min_exponent10 = (int) (MPFR_EMIN_DEFAULT * 0.3010299956639811); 
         MPREAL_PERMISSIVE_EXPR static const int max_exponent10 = (int) (MPFR_EMAX_DEFAULT * 0.3010299956639811); 
 
-        // Should be constant according to standard, but 'digits' depends on precision in MPFR
+#ifdef MPREAL_HAVE_DYNAMIC_STD_NUMERIC_LIMITS
+
+        // Following members should be constant according to standard, but they can be variable in MPFR
+        // So we define them as functions here. 
+        //
+        // This is preferable way for std::numeric_limits<mpfr::mpreal> specialization.
+        // But it is incompatible with standard std::numeric_limits and might not work with other libraries, e.g. boost. 
+        // See below for compatible implementation. 
+        inline static float_round_style round_style()
+        {
+            mp_rnd_t r = mpfr::mpreal::get_default_rnd();
+
+            switch (r)
+            {
+            case GMP_RNDN: return round_to_nearest;
+            case GMP_RNDZ: return round_toward_zero; 
+            case GMP_RNDU: return round_toward_infinity; 
+            case GMP_RNDD: return round_toward_neg_infinity; 
+            default: return round_indeterminate;
+            }
+        }
 
         inline static int digits()                        {    return mpfr::mpreal::get_default_prec();    }
         inline static int digits(const mpfr::mpreal& x)   {    return x.getPrecision();                    }
@@ -2976,6 +2991,25 @@ namespace std
         {
             return digits10(precision);
         }
+#else
+        // Digits and round_style are NOT constants when it comes to mpreal.
+        // If possible, please use functions digits() and round_style() defined above.
+        //
+        // These (default) values are preserved for compatibility with existing libraries, e.g. boost.
+        // Change them accordingly to your application. 
+        //
+        // For example, if you use 256 bits of precision uniformly in your program, then:
+        // digits       = 256
+        // digits10     = 77 
+        // max_digits10 = 78
+        // 
+        // Approximate formula for decimal digits is: digits10 = floor(log10(2) * digits). See bits2digits() for more details.
+
+        static const std::float_round_style round_style = round_to_nearest;
+        static const int digits       = 53;
+        static const int digits10     = 15;
+        static const int max_digits10 = 16;
+#endif
     };
 
 }
