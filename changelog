@@ -1,8 +1,24 @@
+2014-06-03  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Added option to control the numeric_limits<mpreal> specialization.
+	[b1ed2b2430aa] [tip]
+
+2014-05-27  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* .hgtags:
+	Added tag mpfrc++-3.5.7 for changeset 115897b3f5ce
+	[e7fa22557232]
+
+	* changelog:
+	Updated changelog for the release
+	[115897b3f5ce] [mpfrc++-3.5.7]
+
 2014-05-08  Pavel Holoborodko  <pavel@holoborodko.com>
 
 	* mpreal.h:
 	Removed unused parameter from const_infinity
-	[36e7d3597dbe] [tip]
+	[36e7d3597dbe]
 
 2014-02-15  Pavel Holoborodko  <pavel@holoborodko.com>
 
