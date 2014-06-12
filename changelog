@@ -1,8 +1,29 @@
+2014-06-12  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Fixed improper handling of std::setprecision(0), some warnings.
+	Cosmetic changes.
+	[fd8603d00edb] [tip]
+
 2014-06-03  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* .hgtags:
+	Moved tag mpfrc++-3.5.7 to changeset 7787c0058cb1 (from changeset
+	b1ed2b2430aa)
+	[535ed9c45088]
+
+	* changelog:
+	Updated changelog
+	[7787c0058cb1] [mpfrc++-3.5.7]
+
+	* .hgtags:
+	Moved tag mpfrc++-3.5.7 to changeset b1ed2b2430aa (from changeset
+	115897b3f5ce)
+	[97d36c0c4eb4]
 
 	* mpreal.h:
 	Added option to control the numeric_limits<mpreal> specialization.
-	[b1ed2b2430aa] [tip]
+	[b1ed2b2430aa]
 
 2014-05-27  Pavel Holoborodko  <pavel@holoborodko.com>
 
@@ -12,7 +33,7 @@
 
 	* changelog:
 	Updated changelog for the release
-	[115897b3f5ce] [mpfrc++-3.5.7]
+	[115897b3f5ce]
 
 2014-05-08  Pavel Holoborodko  <pavel@holoborodko.com>
 
