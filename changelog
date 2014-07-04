@@ -1,9 +1,24 @@
+2014-07-04  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Added explicit conversion operators and more features to output
+	operator. Contributed by Charles Karney.
+	[43f5240bc55e] [tip]
+
 2014-06-12  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* .hgtags:
+	Added tag mpfrc++-3.5.8 for changeset 848cb7ee9601
+	[5a9d3981da25]
+
+	* changelog:
+	Updated changelog
+	[848cb7ee9601] [mpfrc++-3.5.8]
 
 	* mpreal.h:
 	Fixed improper handling of std::setprecision(0), some warnings.
 	Cosmetic changes.
-	[fd8603d00edb] [tip]
+	[fd8603d00edb]
 
 2014-06-03  Pavel Holoborodko  <pavel@holoborodko.com>
 
