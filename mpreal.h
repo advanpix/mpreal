@@ -66,8 +66,8 @@
 // Library version
 #define MPREAL_VERSION_MAJOR 3
 #define MPREAL_VERSION_MINOR 5
-#define MPREAL_VERSION_PATCHLEVEL 8
-#define MPREAL_VERSION_STRING "3.5.8"
+#define MPREAL_VERSION_PATCHLEVEL 9
+#define MPREAL_VERSION_STRING "3.5.9"
 
 // Detect compiler using signatures from http://predef.sourceforge.net/
 #if defined(__GNUC__) && defined(__INTEL_COMPILER)
@@ -80,22 +80,29 @@
     #define IsInf(x) std::isinf(x)              // GNU C/C++ (and/or other compilers), just hope for C99 conformance
 #endif
 
-// Detect support for r-value references (move semantic). Borrowed from Eigen.
 // A Clang feature extension to determine compiler features.
-// We use it to determine 'cxx_rvalue_references'
 #ifndef __has_feature
-# define __has_feature(x) 0
+    #define __has_feature(x) 0
 #endif
 
+// Detect support for r-value references (move semantic). Borrowed from Eigen.
 #if (__has_feature(cxx_rvalue_references) || \
-    defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L || \
-    (defined(_MSC_VER) && _MSC_VER >= 1600))
+       defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L || \
+      (defined(_MSC_VER) && _MSC_VER >= 1600))
 
-#define MPREAL_HAVE_MOVE_SUPPORT
+    #define MPREAL_HAVE_MOVE_SUPPORT
 
-// Use fields in mpfr_t structure to check if it was initialized / set dummy initialization 
-#define mpfr_is_initialized(x)      (0 != (x)->_mpfr_d)
-#define mpfr_set_uninitialized(x)   ((x)->_mpfr_d = 0 )
+    // Use fields in mpfr_t structure to check if it was initialized / set dummy initialization 
+    #define mpfr_is_initialized(x)      (0 != (x)->_mpfr_d)
+    #define mpfr_set_uninitialized(x)   ((x)->_mpfr_d = 0 )
+#endif
+
+// Detect support for explicit converters. 
+#if (__has_feature(cxx_explicit_conversions) || \
+       defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L || \
+      (defined(_MSC_VER) && _MSC_VER >= 1800))
+
+    #define MPREAL_HAVE_EXPLICIT_CONVERTERS
 #endif
 
 // Detect available 64-bit capabilities
@@ -317,14 +324,34 @@ public:
     friend bool operator == (const mpreal& a, const double b);
 
     // Type Conversion operators
+    bool            toBool      (mp_rnd_t mode = GMP_RNDZ)    const;
     long            toLong      (mp_rnd_t mode = GMP_RNDZ)    const;
     unsigned long   toULong     (mp_rnd_t mode = GMP_RNDZ)    const;
+    float           toFloat     (mp_rnd_t mode = GMP_RNDN)    const;
     double          toDouble    (mp_rnd_t mode = GMP_RNDN)    const;
     long double     toLDouble   (mp_rnd_t mode = GMP_RNDN)    const;
+
+#if defined (MPREAL_HAVE_EXPLICIT_CONVERTERS)
+    explicit operator bool               () const { return toBool();       }
+    explicit operator int                () const { return toLong();       }
+    explicit operator long               () const { return toLong();       }
+    explicit operator long long          () const { return toLong();       }
+    explicit operator unsigned           () const { return toULong();      }
+    explicit operator unsigned long      () const { return toULong();      }
+    explicit operator unsigned long long () const { return toULong();      }
+    explicit operator float              () const { return toFloat();      }
+    explicit operator double             () const { return toDouble();     }
+    explicit operator long double        () const { return toLDouble();    }
+#endif
 
 #if defined (MPREAL_HAVE_INT64_SUPPORT)
     int64_t         toInt64     (mp_rnd_t mode = GMP_RNDZ)    const;
     uint64_t        toUInt64    (mp_rnd_t mode = GMP_RNDZ)    const;
+
+    #if defined (MPREAL_HAVE_EXPLICIT_CONVERTERS)
+    explicit operator int64_t   () const { return toInt64();      }
+    explicit operator uint64_t  () const { return toUInt64();     }
+    #endif
 #endif
 
     // Get raw pointers so that mpreal can be directly used in raw mpfr_* functions
@@ -334,11 +361,13 @@ public:
 
     // Convert mpreal to string with n significant digits in base b
     // n = -1 -> convert with the maximum available digits
-    std::string        toString(int n = -1, int b = 10, mp_rnd_t mode = mpreal::get_default_rnd()) const;
+    std::string toString(int n = -1, int b = 10, mp_rnd_t mode = mpreal::get_default_rnd()) const;
 
 #if (MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0))
-    std::string        toString(const std::string& format) const;
+    std::string toString(const std::string& format) const;
 #endif
+
+    std::ostream& output(std::ostream& os) const;
 
     // Math Functions
     friend const mpreal sqr (const mpreal& v, mp_rnd_t rnd_mode);
@@ -1669,10 +1698,12 @@ inline bool isregular(const mpreal& op){    return (mpfr_regular_p(op.mpfr_srcpt
 
 //////////////////////////////////////////////////////////////////////////
 // Type Converters
-inline long             mpreal::toLong   (mp_rnd_t mode)  const    {    return mpfr_get_si(mpfr_srcptr(), mode);    }
-inline unsigned long    mpreal::toULong  (mp_rnd_t mode)  const    {    return mpfr_get_ui(mpfr_srcptr(), mode);    }
-inline double           mpreal::toDouble (mp_rnd_t mode)  const    {    return mpfr_get_d (mpfr_srcptr(), mode);    }
-inline long double      mpreal::toLDouble(mp_rnd_t mode)  const    {    return mpfr_get_ld(mpfr_srcptr(), mode);    }
+inline bool             mpreal::toBool   (mp_rnd_t mode)  const    {    return  mpfr_zero_p (mpfr_srcptr()) == 0;     }
+inline long             mpreal::toLong   (mp_rnd_t mode)  const    {    return  mpfr_get_si (mpfr_srcptr(), mode);    }
+inline unsigned long    mpreal::toULong  (mp_rnd_t mode)  const    {    return  mpfr_get_ui (mpfr_srcptr(), mode);    }
+inline float            mpreal::toFloat  (mp_rnd_t mode)  const    {    return  mpfr_get_flt(mpfr_srcptr(), mode);    }
+inline double           mpreal::toDouble (mp_rnd_t mode)  const    {    return  mpfr_get_d  (mpfr_srcptr(), mode);    }
+inline long double      mpreal::toLDouble(mp_rnd_t mode)  const    {    return  mpfr_get_ld (mpfr_srcptr(), mode);    }
 
 #if defined (MPREAL_HAVE_INT64_SUPPORT)
 inline int64_t      mpreal::toInt64 (mp_rnd_t mode)    const{    return mpfr_get_sj(mpfr_srcptr(), mode);    }
@@ -1832,9 +1863,32 @@ inline std::string mpreal::toString(int n, int b, mp_rnd_t mode) const
 
 //////////////////////////////////////////////////////////////////////////
 // I/O
+inline std::ostream& mpreal::output(std::ostream& os) const 
+{
+  std::ostringstream format;
+  const std::ios::fmtflags flags = os.flags();
+
+  format << ((flags & std::ios::showpos) ? "%+" : "%") << ".*R*"
+         << ((flags & std::ios::floatfield) == std::ios::fixed ? 'f' :
+             (flags & std::ios::floatfield) == std::ios::scientific ? 'e' :
+             'g');
+
+  char *s = NULL;
+  if(!(mpfr_asprintf(&s, format.str().c_str(),
+                     os.precision(),
+                     mpfr::mpreal::get_default_rnd(),
+                     mpfr_srcptr())
+       < 0))
+    {
+      os << std::string(s);
+      mpfr_free_str(s);
+    }
+  return os;
+}
+
 inline std::ostream& operator<<(std::ostream& os, const mpreal& v)
 {
-    return os << v.toString(static_cast<int>(os.precision()));
+    return v.output(os);
 }
 
 inline std::istream& operator>>(std::istream &is, mpreal& v)
