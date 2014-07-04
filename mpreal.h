@@ -1746,20 +1746,19 @@ inline std::string mpreal::toString(const std::string& format) const
 
 inline std::string mpreal::toString(int n, int b, mp_rnd_t mode) const
 {
+    // TODO: Add extended format specification (f, e, rounding mode) as it done in output operator
     (void)b;
     (void)mode;
 
 #if (MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0))
 
-    // Use MPFR native function for output
-    char format[128];
-    int digits;
+    std::ostringstream format;
 
-    digits = n >= 0 ? n : bits2digits(mpfr_get_prec(mpfr_srcptr()));
+    int digits = (n >= 0) ? n : bits2digits(mpfr_get_prec(mpfr_srcptr()));
+    
+    format << "%." << digits << "RNg";
 
-    sprintf(format,"%%.%dRNg",digits);        // Default format
-
-    return toString(std::string(format));
+    return toString(format.str());
 
 #else
 
@@ -1865,25 +1864,28 @@ inline std::string mpreal::toString(int n, int b, mp_rnd_t mode) const
 // I/O
 inline std::ostream& mpreal::output(std::ostream& os) const 
 {
-  std::ostringstream format;
-  const std::ios::fmtflags flags = os.flags();
+    std::ostringstream format;
+    const std::ios::fmtflags flags = os.flags();
 
-  format << ((flags & std::ios::showpos) ? "%+" : "%") << ".*R*"
-         << ((flags & std::ios::floatfield) == std::ios::fixed ? 'f' :
-             (flags & std::ios::floatfield) == std::ios::scientific ? 'e' :
-             'g');
+    format << ((flags & std::ios::showpos) ? "%+" : "%");
+    if (os.precision() >= 0)
+        format << '.' << os.precision() << "R*"
+               << ((flags & std::ios::floatfield) == std::ios::fixed ? 'f' :
+                   (flags & std::ios::floatfield) == std::ios::scientific ? 'e' :
+                   'g');
+    else
+        format << "R*e";
 
-  char *s = NULL;
-  if(!(mpfr_asprintf(&s, format.str().c_str(),
-                     os.precision(),
-                     mpfr::mpreal::get_default_rnd(),
-                     mpfr_srcptr())
-       < 0))
+    char *s = NULL;
+    if(!(mpfr_asprintf(&s, format.str().c_str(),
+                        mpfr::mpreal::get_default_rnd(),
+                        mpfr_srcptr())
+        < 0))
     {
-      os << std::string(s);
-      mpfr_free_str(s);
+        os << std::string(s);
+        mpfr_free_str(s);
     }
-  return os;
+    return os;
 }
 
 inline std::ostream& operator<<(std::ostream& os, const mpreal& v)
