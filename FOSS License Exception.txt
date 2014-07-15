@@ -1,0 +1,49 @@
+MPFR C++ Free and Open Source Software ("FOSS") License Exception
+
+What is the FOSS License Exception?
+
+MPFR C++ Free and Open Source Software ("FOSS") License Exception allows developers of FOSS applications to include the Pavel Holoborodko’s MPFR C++ Interface with their FOSS applications. The MPFR C++ Interface is typically licensed pursuant to version 3 of the General Public License (“GPL”), but this exception permits distribution of the MPFR C++ Interface with a developer’s FOSS applications licensed under the terms of another FOSS license listed below, even though such other FOSS license may be incompatible with the GPL.
+
+The following terms and conditions describe the circumstances under which Pavel Holoborodko’s MPFR C++ FOSS License Exception applies. 
+
+
+MPFR C++ FOSS License Exception Terms and Conditions
+
+1. Definitions.
+    "Derivative Work" means a derivative work, as defined under applicable copyright law, formed entirely from the Program and one or more FOSS Applications.
+    "FOSS Application" means a free and open source software application distributed subject to a license listed in the section below titled "FOSS License List."
+    "FOSS Notice" means a notice placed by Pavel Holoborodko in a copy of the MPFR C++ Interface stating that such copy of the MPFR C++ Interface may be distributed under MPFR C++ FOSS License Exception.
+    "Independent Work" means portions of the Derivative Work that are not derived from the Program and can reasonably be considered independent and separate works.
+    "Program" means a copy of Pavel Holoborodko’s MPFR C++ Interface that contains a FOSS Notice.
+
+2. A FOSS application developer ("you" or "your") may distribute a Derivative Work provided that you and the Derivative Work meet all of the following conditions:
+    a.You obey the GPL in all respects for the Program and all portions (including modifications) of the Program included in the Derivative Work (provided that this condition does not apply to Independent Works);
+    b.The Derivative Work does not include any work licensed under the GPL other than the Program;
+    c.You distribute Independent Works subject to a license listed in the section below titled "FOSS License List";
+    d.You distribute Independent Works in object code or executable form with the complete corresponding machine-readable source code on the same medium and under the same FOSS license applying to the object code or executable forms;
+    e.All works that are aggregated with the Program or the Derivative Work on a medium or volume of storage are not derivative works of the Program, Derivative Work or FOSS Application, and must reasonably be considered independent and separate works.
+
+3. Pavel Holoborodko reserves all rights not expressly granted in these terms and conditions. If all of the above conditions are not met, then this FOSS License Exception does not apply to you or your Derivative Work.
+
+
+FOSS License List
+
+License Name				Version(s)/Copyright Date
+European Union Public License (EUPL)¹	1.1 
+
+When an Independent Work is licensed under a "Compatible License" pursuant to the EUPL, the Compatible License rather than the EUPL is the applicable license for purposes of these FOSS License Exception Terms and Conditions. 
+
+
+FAQ
+Q1: What are the benefits of the FOSS License Exception?
+ A: The FOSS License Exception permits use of the GPL-licensed MPFR C++ Interface with software applications licensed under certain other FOSS licenses without causing the entire derivative work to be subject to the GPL.
+
+Q2: Can commercial OEMs, ISVs or VARs combine and distribute commercial products with Pavel Holoborodko’s GPL-licensed MPFR C++ Interface under the FOSS License Exception?
+ A: Distributors of commercial products that combine the GPL-licensed MPFR C++ Interface with commercially licensed software (i.e., software not licensed under a FOSS license) must comply with the terms of the GPL. The FOSS License Exception does not apply with respect to products licensed under any license other than the FOSS licenses listed in the section above titled “FOSS License List.”
+    Non-free licenses may also be purchased from Pavel Holoborodko by application developers who do not want their derivative work licensed under the terms of the GPL or any FOSS licenses listed in the section above titled “FOSS License List.”
+
+Q3: What should a developer of a Derivative Work do if it wants to distribute the Derivative Work under the GPL?
+ A: A developer may choose to distribute a copy of a Derivative Work exclusively under the terms of the GPL at any time by removing the FOSS License Exception notice from that copy of the Program and including appropriate GPL notices.
+
+Q4: If I have more questions, who should I contact?
+ A: For more information, please contact Pavel Holoborodko (pavel@holoborodko.com). 
