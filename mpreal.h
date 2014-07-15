@@ -292,7 +292,7 @@ public:
     friend bool operator == (const mpreal& a, const double b);
 
     // Type Conversion operators
-    bool               toBool      (mp_rnd_t mode = GMP_RNDZ)    const;
+    bool               toBool      (                        )    const;
     long               toLong      (mp_rnd_t mode = GMP_RNDZ)    const;
     unsigned long      toULong     (mp_rnd_t mode = GMP_RNDZ)    const;
     long long          toLLong     (mp_rnd_t mode = GMP_RNDZ)    const;
@@ -1651,7 +1651,7 @@ inline bool isregular(const mpreal& op){    return (mpfr_regular_p(op.mpfr_srcpt
 
 //////////////////////////////////////////////////////////////////////////
 // Type Converters
-inline bool               mpreal::toBool   (mp_rnd_t mode)  const    {    return  mpfr_zero_p (mpfr_srcptr()) == 0;     }
+inline bool               mpreal::toBool   (             )  const    {    return  mpfr_zero_p (mpfr_srcptr()) == 0;     }
 inline long               mpreal::toLong   (mp_rnd_t mode)  const    {    return  mpfr_get_si (mpfr_srcptr(), mode);    }
 inline unsigned long      mpreal::toULong  (mp_rnd_t mode)  const    {    return  mpfr_get_ui (mpfr_srcptr(), mode);    }
 inline float              mpreal::toFloat  (mp_rnd_t mode)  const    {    return  mpfr_get_flt(mpfr_srcptr(), mode);    }
