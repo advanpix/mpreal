@@ -55,9 +55,9 @@
 #include <cmath>
 #include <cstring>
 #include <limits>
+#include <cstdint>
 
 // Options
-#define MPREAL_HAVE_INT64_SUPPORT               // Enable int64_t support if possible. Available only for MSVC 2010 & GCC. 
 #define MPREAL_HAVE_MSVC_DEBUGVIEW              // Enable Debugger Visualizer for "Debug" builds in MSVC.
 #define MPREAL_HAVE_DYNAMIC_STD_NUMERIC_LIMITS  // Enable extended std::numeric_limits<mpfr::mpreal> specialization.
                                                 // Meaning that "digits", "round_style" and similar members are defined as functions, not constants.
@@ -105,34 +105,7 @@
     #define MPREAL_HAVE_EXPLICIT_CONVERTERS
 #endif
 
-// Detect available 64-bit capabilities
-#if defined(MPREAL_HAVE_INT64_SUPPORT)
-    
-    #define MPFR_USE_INTMAX_T                   // Should be defined before mpfr.h
-
-    #if defined(_MSC_VER)                       // MSVC + Windows
-        #if (_MSC_VER >= 1600)                    
-            #include <stdint.h>                 // <stdint.h> is available only in msvc2010!
-
-        #else                                   // MPFR relies on intmax_t which is available only in msvc2010
-            #undef MPREAL_HAVE_INT64_SUPPORT    // Besides, MPFR & MPIR have to be compiled with msvc2010
-            #undef MPFR_USE_INTMAX_T            // Since we cannot detect this, disable x64 by default
-                                                // Someone should change this manually if needed.
-        #endif
-
-    #elif defined (__GNUC__) && defined(__linux__)
-        #if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64) || defined(__ia64) || defined(__itanium__) || defined(_M_IA64) || defined (__PPC64__)
-            #undef MPREAL_HAVE_INT64_SUPPORT    // Remove all shaman dances for x64 builds since
-            #undef MPFR_USE_INTMAX_T            // GCC already supports x64 as of "long int" is 64-bit integer, nothing left to do
-        #else
-            #include <stdint.h>                 // use int64_t, uint64_t otherwise
-        #endif
-
-    #else
-        #include <stdint.h>                     // rely on int64_t, uint64_t in all other cases, Mac OSX, etc.
-    #endif
-
-#endif 
+#define MPFR_USE_INTMAX_T   // Enable 64-bit integer types - should be defined before mpfr.h
 
 #if defined(MPREAL_HAVE_MSVC_DEBUGVIEW) && defined(_MSC_VER) && defined(_DEBUG)
     #define MPREAL_MSVC_DEBUGVIEW_CODE     DebugView = toString();
@@ -174,23 +147,20 @@ public:
     mpreal();
     mpreal(const mpreal& u);
     mpreal(const mpf_t u);    
-    mpreal(const mpz_t u,             mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());    
-    mpreal(const mpq_t u,             mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());    
-    mpreal(const double u,            mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());
-    mpreal(const long double u,       mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());
-    mpreal(const unsigned long int u, mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());
-    mpreal(const unsigned int u,      mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());
-    mpreal(const long int u,          mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());
-    mpreal(const int u,               mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());
+    mpreal(const mpz_t u,                  mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());    
+    mpreal(const mpq_t u,                  mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());    
+    mpreal(const double u,                 mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());
+    mpreal(const long double u,            mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());
+    mpreal(const unsigned long long int u, mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());
+    mpreal(const long long int u,          mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());
+    mpreal(const unsigned long int u,      mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());
+    mpreal(const unsigned int u,           mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());
+    mpreal(const long int u,               mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());
+    mpreal(const int u,                    mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t mode = mpreal::get_default_rnd());
     
     // Construct mpreal from mpfr_t structure.
     // shared = true allows to avoid deep copy, so that mpreal and 'u' share the same data & pointers.    
     mpreal(const mpfr_t  u, bool shared = false);   
-
-#if defined (MPREAL_HAVE_INT64_SUPPORT)
-    mpreal(const uint64_t u,          mp_prec_t prec = mpreal::get_default_prec(),  mp_rnd_t mode = mpreal::get_default_rnd());
-    mpreal(const int64_t u,           mp_prec_t prec = mpreal::get_default_prec(),  mp_rnd_t mode = mpreal::get_default_rnd());
-#endif
 
     mpreal(const char* s,             mp_prec_t prec = mpreal::get_default_prec(), int base = 10, mp_rnd_t mode = mpreal::get_default_rnd());
     mpreal(const std::string& s,      mp_prec_t prec = mpreal::get_default_prec(), int base = 10, mp_rnd_t mode = mpreal::get_default_rnd());
@@ -234,16 +204,14 @@ public:
     mpreal& operator+=(const long int u);
     mpreal& operator+=(const int u);
 
-#if defined (MPREAL_HAVE_INT64_SUPPORT)
-    mpreal& operator+=(const int64_t  u);
-    mpreal& operator+=(const uint64_t u);
-    mpreal& operator-=(const int64_t  u);
-    mpreal& operator-=(const uint64_t u);
-    mpreal& operator*=(const int64_t  u);
-    mpreal& operator*=(const uint64_t u);
-    mpreal& operator/=(const int64_t  u);
-    mpreal& operator/=(const uint64_t u);
-#endif 
+    mpreal& operator+=(const long long int  u);
+    mpreal& operator+=(const unsigned long long int u);
+    mpreal& operator-=(const long long int  u);
+    mpreal& operator-=(const unsigned long long int u);
+    mpreal& operator*=(const long long int  u);
+    mpreal& operator*=(const unsigned long long int u);
+    mpreal& operator/=(const long long int  u);
+    mpreal& operator/=(const unsigned long long int u);
 
     const mpreal operator+() const;
     mpreal& operator++ ();
@@ -324,34 +292,26 @@ public:
     friend bool operator == (const mpreal& a, const double b);
 
     // Type Conversion operators
-    bool            toBool      (mp_rnd_t mode = GMP_RNDZ)    const;
-    long            toLong      (mp_rnd_t mode = GMP_RNDZ)    const;
-    unsigned long   toULong     (mp_rnd_t mode = GMP_RNDZ)    const;
-    float           toFloat     (mp_rnd_t mode = GMP_RNDN)    const;
-    double          toDouble    (mp_rnd_t mode = GMP_RNDN)    const;
-    long double     toLDouble   (mp_rnd_t mode = GMP_RNDN)    const;
+    bool               toBool      (mp_rnd_t mode = GMP_RNDZ)    const;
+    long               toLong      (mp_rnd_t mode = GMP_RNDZ)    const;
+    unsigned long      toULong     (mp_rnd_t mode = GMP_RNDZ)    const;
+    long long          toLLong     (mp_rnd_t mode = GMP_RNDZ)    const;
+    unsigned long long toULLong    (mp_rnd_t mode = GMP_RNDZ)    const;
+    float              toFloat     (mp_rnd_t mode = GMP_RNDN)    const;
+    double             toDouble    (mp_rnd_t mode = GMP_RNDN)    const;
+    long double        toLDouble   (mp_rnd_t mode = GMP_RNDN)    const;
 
 #if defined (MPREAL_HAVE_EXPLICIT_CONVERTERS)
     explicit operator bool               () const { return toBool();       }
     explicit operator int                () const { return toLong();       }
     explicit operator long               () const { return toLong();       }
-    explicit operator long long          () const { return toLong();       }
+    explicit operator long long          () const { return toLLong();      }
     explicit operator unsigned           () const { return toULong();      }
     explicit operator unsigned long      () const { return toULong();      }
-    explicit operator unsigned long long () const { return toULong();      }
+    explicit operator unsigned long long () const { return toULLong();     }
     explicit operator float              () const { return toFloat();      }
     explicit operator double             () const { return toDouble();     }
     explicit operator long double        () const { return toLDouble();    }
-#endif
-
-#if defined (MPREAL_HAVE_INT64_SUPPORT)
-    int64_t         toInt64     (mp_rnd_t mode = GMP_RNDZ)    const;
-    uint64_t        toUInt64    (mp_rnd_t mode = GMP_RNDZ)    const;
-
-    #if defined (MPREAL_HAVE_EXPLICIT_CONVERTERS)
-    explicit operator int64_t   () const { return toInt64();      }
-    explicit operator uint64_t  () const { return toUInt64();     }
-    #endif
 #endif
 
     // Get raw pointers so that mpreal can be directly used in raw mpfr_* functions
@@ -738,8 +698,7 @@ inline mpreal::mpreal(const int u, mp_prec_t prec, mp_rnd_t mode)
     MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
-#if defined (MPREAL_HAVE_INT64_SUPPORT)
-inline mpreal::mpreal(const uint64_t u, mp_prec_t prec, mp_rnd_t mode)
+inline mpreal::mpreal(const unsigned long long u, mp_prec_t prec, mp_rnd_t mode)
 {
     mpfr_init2 (mpfr_ptr(), prec);
     mpfr_set_uj(mpfr_ptr(), u, mode); 
@@ -747,14 +706,13 @@ inline mpreal::mpreal(const uint64_t u, mp_prec_t prec, mp_rnd_t mode)
     MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
-inline mpreal::mpreal(const int64_t u, mp_prec_t prec, mp_rnd_t mode)
+inline mpreal::mpreal(const long long u, mp_prec_t prec, mp_rnd_t mode)
 {
     mpfr_init2 (mpfr_ptr(), prec);
     mpfr_set_sj(mpfr_ptr(), u, mode); 
 
     MPREAL_MSVC_DEBUGVIEW_CODE;
 }
-#endif
 
 inline mpreal::mpreal(const char* s, mp_prec_t prec, int base, mp_rnd_t mode)
 {
@@ -802,11 +760,8 @@ namespace internal{
     template <> struct result_type<unsigned int>        {typedef mpreal type;};    
     template <> struct result_type<long int>            {typedef mpreal type;};    
     template <> struct result_type<int>                 {typedef mpreal type;};    
-
-#if defined (MPREAL_HAVE_INT64_SUPPORT)
-    template <> struct result_type<int64_t  >           {typedef mpreal type;};    
-    template <> struct result_type<uint64_t >           {typedef mpreal type;};    
-#endif
+    template <> struct result_type<long long>           {typedef mpreal type;};    
+    template <> struct result_type<unsigned long long>  {typedef mpreal type;};    
 }
 
 // + Addition
@@ -1179,16 +1134,14 @@ inline mpreal& mpreal::operator+=(const int u)
     return *this;
 }
 
-#if defined (MPREAL_HAVE_INT64_SUPPORT)
-inline mpreal& mpreal::operator+=(const int64_t  u){    *this += mpreal(u); MPREAL_MSVC_DEBUGVIEW_CODE; return *this;    }
-inline mpreal& mpreal::operator+=(const uint64_t u){    *this += mpreal(u); MPREAL_MSVC_DEBUGVIEW_CODE; return *this;    }
-inline mpreal& mpreal::operator-=(const int64_t  u){    *this -= mpreal(u); MPREAL_MSVC_DEBUGVIEW_CODE; return *this;    }
-inline mpreal& mpreal::operator-=(const uint64_t u){    *this -= mpreal(u); MPREAL_MSVC_DEBUGVIEW_CODE; return *this;    }
-inline mpreal& mpreal::operator*=(const int64_t  u){    *this *= mpreal(u); MPREAL_MSVC_DEBUGVIEW_CODE; return *this;    }
-inline mpreal& mpreal::operator*=(const uint64_t u){    *this *= mpreal(u); MPREAL_MSVC_DEBUGVIEW_CODE; return *this;    }
-inline mpreal& mpreal::operator/=(const int64_t  u){    *this /= mpreal(u); MPREAL_MSVC_DEBUGVIEW_CODE; return *this;    }
-inline mpreal& mpreal::operator/=(const uint64_t u){    *this /= mpreal(u); MPREAL_MSVC_DEBUGVIEW_CODE; return *this;    }
-#endif 
+inline mpreal& mpreal::operator+=(const long long int u)         {    *this += mpreal(u); MPREAL_MSVC_DEBUGVIEW_CODE; return *this;    }
+inline mpreal& mpreal::operator+=(const unsigned long long int u){    *this += mpreal(u); MPREAL_MSVC_DEBUGVIEW_CODE; return *this;    }
+inline mpreal& mpreal::operator-=(const long long int  u)        {    *this -= mpreal(u); MPREAL_MSVC_DEBUGVIEW_CODE; return *this;    }
+inline mpreal& mpreal::operator-=(const unsigned long long int u){    *this -= mpreal(u); MPREAL_MSVC_DEBUGVIEW_CODE; return *this;    }
+inline mpreal& mpreal::operator*=(const long long int  u)        {    *this *= mpreal(u); MPREAL_MSVC_DEBUGVIEW_CODE; return *this;    }
+inline mpreal& mpreal::operator*=(const unsigned long long int u){    *this *= mpreal(u); MPREAL_MSVC_DEBUGVIEW_CODE; return *this;    }
+inline mpreal& mpreal::operator/=(const long long int  u)        {    *this /= mpreal(u); MPREAL_MSVC_DEBUGVIEW_CODE; return *this;    }
+inline mpreal& mpreal::operator/=(const unsigned long long int u){    *this /= mpreal(u); MPREAL_MSVC_DEBUGVIEW_CODE; return *this;    }
 
 inline const mpreal mpreal::operator+()const    {    return mpreal(*this); }
 
@@ -1698,17 +1651,14 @@ inline bool isregular(const mpreal& op){    return (mpfr_regular_p(op.mpfr_srcpt
 
 //////////////////////////////////////////////////////////////////////////
 // Type Converters
-inline bool             mpreal::toBool   (mp_rnd_t mode)  const    {    return  mpfr_zero_p (mpfr_srcptr()) == 0;     }
-inline long             mpreal::toLong   (mp_rnd_t mode)  const    {    return  mpfr_get_si (mpfr_srcptr(), mode);    }
-inline unsigned long    mpreal::toULong  (mp_rnd_t mode)  const    {    return  mpfr_get_ui (mpfr_srcptr(), mode);    }
-inline float            mpreal::toFloat  (mp_rnd_t mode)  const    {    return  mpfr_get_flt(mpfr_srcptr(), mode);    }
-inline double           mpreal::toDouble (mp_rnd_t mode)  const    {    return  mpfr_get_d  (mpfr_srcptr(), mode);    }
-inline long double      mpreal::toLDouble(mp_rnd_t mode)  const    {    return  mpfr_get_ld (mpfr_srcptr(), mode);    }
-
-#if defined (MPREAL_HAVE_INT64_SUPPORT)
-inline int64_t      mpreal::toInt64 (mp_rnd_t mode)    const{    return mpfr_get_sj(mpfr_srcptr(), mode);    }
-inline uint64_t     mpreal::toUInt64(mp_rnd_t mode)    const{    return mpfr_get_uj(mpfr_srcptr(), mode);    }
-#endif
+inline bool               mpreal::toBool   (mp_rnd_t mode)  const    {    return  mpfr_zero_p (mpfr_srcptr()) == 0;     }
+inline long               mpreal::toLong   (mp_rnd_t mode)  const    {    return  mpfr_get_si (mpfr_srcptr(), mode);    }
+inline unsigned long      mpreal::toULong  (mp_rnd_t mode)  const    {    return  mpfr_get_ui (mpfr_srcptr(), mode);    }
+inline float              mpreal::toFloat  (mp_rnd_t mode)  const    {    return  mpfr_get_flt(mpfr_srcptr(), mode);    }
+inline double             mpreal::toDouble (mp_rnd_t mode)  const    {    return  mpfr_get_d  (mpfr_srcptr(), mode);    }
+inline long double        mpreal::toLDouble(mp_rnd_t mode)  const    {    return  mpfr_get_ld (mpfr_srcptr(), mode);    }
+inline long long          mpreal::toLLong  (mp_rnd_t mode)  const    {    return  mpfr_get_sj (mpfr_srcptr(), mode);    }
+inline unsigned long long mpreal::toULLong (mp_rnd_t mode)  const    {    return  mpfr_get_uj (mpfr_srcptr(), mode);    }
 
 inline ::mpfr_ptr     mpreal::mpfr_ptr()             { return mp; }
 inline ::mpfr_srcptr  mpreal::mpfr_ptr()    const    { return mp; }
