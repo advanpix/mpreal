@@ -424,15 +424,17 @@ public:
     friend const mpreal mod (const mpreal& x, const mpreal& y, mp_rnd_t rnd_mode); // Modulus after division
 #endif
 
-// MPFR 3.0.0 Specifics
 #if (MPFR_VERSION >= MPFR_VERSION_NUM(3,0,0))
     friend const mpreal digamma (const mpreal& v,        mp_rnd_t rnd_mode);
     friend const mpreal ai      (const mpreal& v,        mp_rnd_t rnd_mode);
     friend const mpreal urandom (gmp_randstate_t& state, mp_rnd_t rnd_mode);     // use gmp_randinit_default() to init state, gmp_randclear() to clear
+#endif
+
+#if (MPFR_VERSION >= MPFR_VERSION_NUM(3,1,0))
     friend const mpreal grandom (gmp_randstate_t& state, mp_rnd_t rnd_mode);     // use gmp_randinit_default() to init state, gmp_randclear() to clear
     friend const mpreal grandom (unsigned int seed);
 #endif
-    
+
     // Uniformly distributed random number generation in [0,1] using
     // Mersenne-Twister algorithm by default.
     // Use parameter to setup seed, e.g.: random((unsigned)time(NULL))
@@ -2502,33 +2504,24 @@ inline const mpreal nextbelow  (const mpreal& x)
 inline const mpreal urandomb (gmp_randstate_t& state)
 {
     mpreal x;
-    mpfr_urandomb(x.mp,state);
+    mpfr_urandomb(x.mpfr_ptr(),state);
     return x;
 }
 
-#if (MPFR_VERSION >= MPFR_VERSION_NUM(3,1,0))
-// use gmp_randinit_default() to init state, gmp_randclear() to clear
+#if (MPFR_VERSION >= MPFR_VERSION_NUM(3,0,0))
 inline const mpreal urandom (gmp_randstate_t& state, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
 {
     mpreal x;
-    mpfr_urandom(x.mp,state,rnd_mode);
+    mpfr_urandom(x.mpfr_ptr(), state, rnd_mode);
     return x;
 }
-
-inline const mpreal grandom (gmp_randstate_t& state, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
-{
-    mpreal x;
-    mpfr_grandom(x.mp, NULL, state, rnd_mode);
-    return x;
-}
-
-#endif 
+#endif
 
 #if (MPFR_VERSION <= MPFR_VERSION_NUM(2,4,2))
 inline const mpreal random2 (mp_size_t size, mp_exp_t exp)
 {
     mpreal x;
-    mpfr_random2(x.mp,size,exp);
+    mpfr_random2(x.mpfr_ptr(),size,exp);
     return x;
 }
 #endif
@@ -2539,16 +2532,15 @@ inline const mpreal random2 (mp_size_t size, mp_exp_t exp)
 // seed != 0
 inline const mpreal random(unsigned int seed = 0)
 {
-
 #if (MPFR_VERSION >= MPFR_VERSION_NUM(3,0,0))
     static gmp_randstate_t state;
-    static bool isFirstTime = true;
+    static bool initialize = true;
 
-    if(isFirstTime)
+    if(initialize)
     {
         gmp_randinit_default(state);
         gmp_randseed_ui(state,0);
-        isFirstTime = false;
+        initialize = false;
     }
 
     if(seed != 0)    gmp_randseed_ui(state,seed);
@@ -2561,17 +2553,25 @@ inline const mpreal random(unsigned int seed = 0)
 
 }
 
-#if (MPFR_VERSION >= MPFR_VERSION_NUM(3,0,0))
+#if (MPFR_VERSION >= MPFR_VERSION_NUM(3,1,0))
+
+inline const mpreal grandom (gmp_randstate_t& state, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
+{
+    mpreal x;
+    mpfr_grandom(x.mpfr_ptr(), NULL, state, rnd_mode);
+    return x;
+}
+
 inline const mpreal grandom(unsigned int seed = 0)
 {
     static gmp_randstate_t state;
-    static bool isFirstTime = true;
+    static bool initialize = true;
 
-    if(isFirstTime)
+    if(initialize)
     {
         gmp_randinit_default(state);
         gmp_randseed_ui(state,0);
-        isFirstTime = false;
+        initialize = false;
     }
 
     if(seed != 0) gmp_randseed_ui(state,seed);
