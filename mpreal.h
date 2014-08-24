@@ -521,7 +521,7 @@ public:
     mp_exp_t get_exp();
     int set_exp(mp_exp_t e);
     int check_range  (int t, mp_rnd_t rnd_mode = get_default_rnd());
-    int subnormalize (int t,mp_rnd_t rnd_mode = get_default_rnd());
+    int subnormalize (int t, mp_rnd_t rnd_mode = get_default_rnd());
 
     // Inexact conversion from float
     inline bool fits_in_bits(double x, int n);
@@ -895,9 +895,9 @@ inline bool isEqualFuzzy(const mpreal& a, const mpreal& b);
 inline bool isEqualUlps(const mpreal& a, const mpreal& b, int maxUlps);
 
 //////////////////////////////////////////////////////////////////////////
-//     Convert precision in 'bits' to decimal digits and vice versa.
-//        bits   = ceil(digits*log[2](10))
-//        digits = floor(bits*log[10](2))
+// Convert precision in 'bits' to decimal digits and vice versa.
+//    bits   = ceil(digits*log[2](10))
+//    digits = floor(bits*log[10](2))
 
 inline mp_prec_t digits2bits(int d);
 inline int       bits2digits(mp_prec_t b);
@@ -2012,6 +2012,20 @@ inline bool isEqualFuzzy(const mpreal& a, const mpreal& b, const mpreal& eps)
 inline bool isEqualFuzzy(const mpreal& a, const mpreal& b)
 {
     return isEqualFuzzy(a, b, machine_epsilon((max)(1, (min)(abs(a), abs(b)))));
+}
+
+//////////////////////////////////////////////////////////////////////////
+// C++11 sign functions.
+inline mpreal copysign(const mpreal& x, const  mpreal& y, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
+{
+    mpreal rop(0, mpfr_get_prec(x.mpfr_ptr()));
+    mpfr_setsign(rop.mpfr_ptr(), x.mpfr_srcptr(), mpfr_signbit(y.mpfr_srcptr()), rnd_mode);
+    return rop;
+}
+
+inline bool signbit(const mpreal& x)
+{
+    return mpfr_signbit(x.mpfr_srcptr());
 }
 
 inline const mpreal modf(const mpreal& v, mpreal& n)
