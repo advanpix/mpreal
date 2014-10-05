@@ -1,9 +1,53 @@
+2014-08-24  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Added copysign and signbit functions
+	[634c24e851fc] [tip]
+
+2014-07-19  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Added proper MPFR version detection for grandom
+	[7cc45167ef74]
+
+2014-07-15  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Fixed "unused argument" warning
+	[4d2f08db7f3d]
+
+	* FOSS License Exception.txt:
+	Added FOSS license exception (suggested by Jorge Tiago Vila)
+	[bbb52e09d0db]
+
+	* mpreal.h:
+	Greatly simplified support for 64-bit integers (suggested by Charles
+	Karney)
+	[70aa80a90f41]
+
 2014-07-04  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* .hgtags:
+	Moved tag mpfrc++-3.5.9 to changeset 3b59fb37d8d0 (from changeset
+	c82eb0b36ed8)
+	[f0a55e6c6510]
+
+	* mpreal.h:
+	Enhancements in output and toString functions
+	[3b59fb37d8d0] [mpfrc++-3.5.9]
+
+	* .hgtags:
+	Added tag mpfrc++-3.5.9 for changeset c82eb0b36ed8
+	[b5c655632af0]
+
+	* changelog:
+	Updated changelog
+	[c82eb0b36ed8]
 
 	* mpreal.h:
 	Added explicit conversion operators and more features to output
 	operator. Contributed by Charles Karney.
-	[43f5240bc55e] [tip]
+	[43f5240bc55e]
 
 2014-06-12  Pavel Holoborodko  <pavel@holoborodko.com>
 
