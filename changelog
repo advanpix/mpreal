@@ -1,8 +1,32 @@
+2014-10-10  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* FOSS License Exception.txt, example/example.cpp, mpreal.h:
+	Fixed error in signum (sgn) function.
+	[39b74057b225] [tip]
+
+2014-10-05  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* .hgtags:
+	Added tag mpfrc++-3.6.0 for changeset 2d60dbf27e9d
+	[f7c491ba598d]
+
+	* mpreal.h:
+	Updated version signature
+	[2d60dbf27e9d] [mpfrc++-3.6.0]
+
+	* .hgtags:
+	Removed tag mpfrc++-3.5.9
+	[b6558a00425c]
+
+	* changelog:
+	Updated changelog
+	[1bdf7affbbc7]
+
 2014-08-24  Pavel Holoborodko  <pavel@holoborodko.com>
 
 	* mpreal.h:
 	Added copysign and signbit functions
-	[634c24e851fc] [tip]
+	[634c24e851fc]
 
 2014-07-19  Pavel Holoborodko  <pavel@holoborodko.com>
 
@@ -34,7 +58,7 @@
 
 	* mpreal.h:
 	Enhancements in output and toString functions
-	[3b59fb37d8d0] [mpfrc++-3.5.9]
+	[3b59fb37d8d0]
 
 	* .hgtags:
 	Added tag mpfrc++-3.5.9 for changeset c82eb0b36ed8
