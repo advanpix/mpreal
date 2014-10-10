@@ -14,7 +14,7 @@
     Helmut Jarausch, Fokko Beekhof, Ulrich Mutze, Heinz van Saanen, 
     Pere Constans, Peter van Hoof, Gael Guennebaud, Tsai Chia Cheng, 
     Alexei Zubanov, Jauhien Piatlicki, Victor Berger, John Westwood,
-    Petr Aleksandrov.
+    Petr Aleksandrov, Orion Poplawski, Charles Karney, Arash Partow.
 
     Licensing:
     (A) MPFR C++ is under GNU General Public License ("GPL").

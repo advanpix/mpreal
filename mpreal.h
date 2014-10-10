@@ -12,7 +12,7 @@
     Helmut Jarausch, Fokko Beekhof, Ulrich Mutze, Heinz van Saanen, 
     Pere Constans, Peter van Hoof, Gael Guennebaud, Tsai Chia Cheng, 
     Alexei Zubanov, Jauhien Piatlicki, Victor Berger, John Westwood,
-    Petr Aleksandrov, Orion Poplawski, Charles Karney.
+    Petr Aleksandrov, Orion Poplawski, Charles Karney, Arash Partow.
 
     Licensing:
     (A) MPFR C++ is under GNU General Public License ("GPL").
@@ -65,9 +65,9 @@
 
 // Library version
 #define MPREAL_VERSION_MAJOR 3
-#define MPREAL_VERSION_MINOR 6
-#define MPREAL_VERSION_PATCHLEVEL 0
-#define MPREAL_VERSION_STRING "3.6.0"
+#define MPREAL_VERSION_MINOR 5
+#define MPREAL_VERSION_PATCHLEVEL 9
+#define MPREAL_VERSION_STRING "3.5.9"
 
 // Detect compiler using signatures from http://predef.sourceforge.net/
 #if defined(__GNUC__) && defined(__INTEL_COMPILER)
@@ -1877,8 +1877,7 @@ inline int bits2digits(mp_prec_t b)
 // Set/Get number properties
 inline int sgn(const mpreal& op)
 {
-    int r = mpfr_signbit(op.mpfr_srcptr());
-    return (r > 0? -1 : 1);
+    return mpfr_sgn(op.mpfr_srcptr());
 }
 
 inline mpreal& mpreal::setSign(int sign, mp_rnd_t RoundingMode)
