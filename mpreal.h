@@ -395,6 +395,7 @@ public:
     friend const mpreal eint   (const mpreal& v, mp_rnd_t rnd_mode);
 
     friend const mpreal gamma    (const mpreal& v, mp_rnd_t rnd_mode);
+    friend const mpreal tgamma   (const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal lngamma  (const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal lgamma   (const mpreal& v, int *signp, mp_rnd_t rnd_mode);
     friend const mpreal zeta     (const mpreal& v, mp_rnd_t rnd_mode);
@@ -2194,6 +2195,7 @@ inline const mpreal log1p   (const mpreal& x, mp_rnd_t r = mpreal::get_default_r
 inline const mpreal expm1   (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(expm1  );    }
 inline const mpreal eint    (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(eint   );    }
 inline const mpreal gamma   (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(gamma  );    }
+inline const mpreal tgamma  (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(gamma  );    }
 inline const mpreal lngamma (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(lngamma);    }
 inline const mpreal zeta    (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(zeta   );    }
 inline const mpreal erf     (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(erf    );    }
