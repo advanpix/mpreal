@@ -56,6 +56,7 @@
 #include <cstring>
 #include <limits>
 #include <cstdint>
+#include <complex>
 
 // Options
 #define MPREAL_HAVE_MSVC_DEBUGVIEW              // Enable Debugger Visualizer for "Debug" builds in MSVC.
@@ -191,6 +192,7 @@ public:
     mpreal& operator=(const int v);
     mpreal& operator=(const char* s);
     mpreal& operator=(const std::string& s);
+    template <typename real_t> mpreal& operator= (const std::complex<real_t>& z);
 
     // +
     mpreal& operator+=(const mpreal& v);
@@ -590,7 +592,7 @@ inline mpreal::mpreal(const mpreal& u)
 #ifdef MPREAL_HAVE_MOVE_SUPPORT
 inline mpreal::mpreal(mpreal&& other)
 {
-    mpfr_set_uninitialized(mpfr_ptr());     // make sure "other" holds no pinter to actual data 
+    mpfr_set_uninitialized(mpfr_ptr());     // make sure "other" holds no pointer to actual data 
     mpfr_swap(mpfr_ptr(), other.mpfr_ptr());
 
     MPREAL_MSVC_DEBUGVIEW_CODE;
@@ -1059,6 +1061,11 @@ inline mpreal& mpreal::operator=(const std::string& s)
     return *this;
 }
 
+template <typename real_t> 
+inline mpreal& mpreal::operator= (const std::complex<real_t>& z)
+{
+    return *this = mpreal(z.real());
+}
 
 //////////////////////////////////////////////////////////////////////////
 // + Addition
