@@ -5,14 +5,15 @@
     Project homepage:    http://www.holoborodko.com/pavel/mpfr
     Contact e-mail:      pavel@holoborodko.com
 
-    Copyright (c) 2008-2014 Pavel Holoborodko
+    Copyright (c) 2008-2015 Pavel Holoborodko
 
     Contributors:
     Dmitriy Gubanov, Konstantin Holoborodko, Brian Gladman, 
     Helmut Jarausch, Fokko Beekhof, Ulrich Mutze, Heinz van Saanen, 
     Pere Constans, Peter van Hoof, Gael Guennebaud, Tsai Chia Cheng, 
     Alexei Zubanov, Jauhien Piatlicki, Victor Berger, John Westwood,
-    Petr Aleksandrov, Orion Poplawski, Charles Karney, Arash Partow.
+    Petr Aleksandrov, Orion Poplawski, Charles Karney, Arash Partow,
+    Rodney James.
 
     Licensing:
     (A) MPFR C++ is under GNU General Public License ("GPL").
@@ -67,8 +68,8 @@
 // Library version
 #define MPREAL_VERSION_MAJOR 3
 #define MPREAL_VERSION_MINOR 6
-#define MPREAL_VERSION_PATCHLEVEL 1
-#define MPREAL_VERSION_STRING "3.6.1"
+#define MPREAL_VERSION_PATCHLEVEL 2
+#define MPREAL_VERSION_STRING "3.6.2"
 
 // Detect compiler using signatures from http://predef.sourceforge.net/
 #if defined(__GNUC__) && defined(__INTEL_COMPILER)
@@ -126,6 +127,12 @@
 #define MPREAL_DOUBLE_BITS_OVERFLOW -1          // Triggers overflow exception during conversion to double if mpreal 
                                                 // cannot fit in MPREAL_DOUBLE_BITS_OVERFLOW bits
                                                 // = -1 disables overflow checks (default)
+
+// Fast replacement for mpfr_set_zero(x, +1):
+// (a) uses low-level data members, might not be compatible with new versions of MPFR
+// (b) sign is not set, add (x)->_mpfr_sign = 1;
+#define mpfr_set_zero_fast(x)  ((x)->_mpfr_exp = __MPFR_EXP_ZERO)
+
 #if defined(__GNUC__)
   #define MPREAL_PERMISSIVE_EXPR __extension__
 #else
@@ -187,6 +194,8 @@ public:
     mpreal& operator=(const long double v);
     mpreal& operator=(const double v);        
     mpreal& operator=(const unsigned long int v);
+    mpreal& operator=(const unsigned long long int v);
+    mpreal& operator=(const long long int v);
     mpreal& operator=(const unsigned int v);
     mpreal& operator=(const long int v);
     mpreal& operator=(const int v);
@@ -304,16 +313,16 @@ public:
     long double        toLDouble   (mp_rnd_t mode = GMP_RNDN)    const;
 
 #if defined (MPREAL_HAVE_EXPLICIT_CONVERTERS)
-    explicit operator bool               () const { return toBool();       }
-    explicit operator int                () const { return toLong();       }
-    explicit operator long               () const { return toLong();       }
-    explicit operator long long          () const { return toLLong();      }
-    explicit operator unsigned           () const { return toULong();      }
-    explicit operator unsigned long      () const { return toULong();      }
-    explicit operator unsigned long long () const { return toULLong();     }
-    explicit operator float              () const { return toFloat();      }
-    explicit operator double             () const { return toDouble();     }
-    explicit operator long double        () const { return toLDouble();    }
+    explicit operator bool               () const { return toBool();                 }
+    explicit operator int                () const { return int(toLong());            }
+    explicit operator long               () const { return toLong();                 }
+    explicit operator long long          () const { return toLLong();                }
+    explicit operator unsigned           () const { return unsigned(toULong());      }
+    explicit operator unsigned long      () const { return toULong();                }
+    explicit operator unsigned long long () const { return toULLong();               }
+    explicit operator float              () const { return toFloat();                }
+    explicit operator double             () const { return toDouble();               }
+    explicit operator long double        () const { return toLDouble();              }
 #endif
 
     // Get raw pointers so that mpreal can be directly used in raw mpfr_* functions
@@ -355,6 +364,7 @@ public:
     
     friend const mpreal log  (const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal log2 (const mpreal& v, mp_rnd_t rnd_mode);
+    friend const mpreal logb (const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal log10(const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal exp  (const mpreal& v, mp_rnd_t rnd_mode); 
     friend const mpreal exp2 (const mpreal& v, mp_rnd_t rnd_mode);
@@ -412,7 +422,7 @@ public:
     friend const mpreal fma      (const mpreal& v1, const mpreal& v2, const mpreal& v3, mp_rnd_t rnd_mode);
     friend const mpreal fms      (const mpreal& v1, const mpreal& v2, const mpreal& v3, mp_rnd_t rnd_mode);
     friend const mpreal agm      (const mpreal& v1, const mpreal& v2, mp_rnd_t rnd_mode);
-    friend const mpreal sum      (const mpreal tab[], unsigned long int n, mp_rnd_t rnd_mode);
+    friend const mpreal sum      (const mpreal tab[], const unsigned long int n, int& status, mp_rnd_t rnd_mode);
     friend int sgn(const mpreal& v); // returns -1 or +1
 
 // MPFR 2.4.0 Specifics
@@ -445,8 +455,9 @@ public:
     friend const mpreal random(unsigned int seed);
 
     // Exponent and mantissa manipulation
-    friend const mpreal frexp(const mpreal& v, mp_exp_t* exp);    
-    friend const mpreal ldexp(const mpreal& v, mp_exp_t exp);
+    friend const mpreal frexp (const mpreal& v, mp_exp_t* exp);    
+    friend const mpreal ldexp (const mpreal& v, mp_exp_t exp);
+    friend const mpreal scalbn(const mpreal& v, mp_exp_t exp);
 
     // Splits mpreal value into fractional and integer parts.
     // Returns fractional part and stores integer part in n.
@@ -575,8 +586,8 @@ public:
 // Default constructor: creates mp number and initializes it to 0.
 inline mpreal::mpreal() 
 { 
-    mpfr_init2 (mpfr_ptr(), mpreal::get_default_prec()); 
-    mpfr_set_ui(mpfr_ptr(), 0, mpreal::get_default_rnd());
+    mpfr_init2(mpfr_ptr(), mpreal::get_default_prec()); 
+    mpfr_set_zero_fast(mpfr_ptr());
 
     MPREAL_MSVC_DEBUGVIEW_CODE;
 }
@@ -671,6 +682,22 @@ inline mpreal::mpreal(const long double u, mp_prec_t prec, mp_rnd_t mode)
     MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
+inline mpreal::mpreal(const unsigned long long int u, mp_prec_t prec, mp_rnd_t mode)
+{ 
+    mpfr_init2 (mpfr_ptr(), prec);
+    mpfr_set_uj(mpfr_ptr(), u, mode);
+
+    MPREAL_MSVC_DEBUGVIEW_CODE;
+}
+
+inline mpreal::mpreal(const long long int u, mp_prec_t prec, mp_rnd_t mode)
+{ 
+    mpfr_init2 (mpfr_ptr(), prec);
+    mpfr_set_sj(mpfr_ptr(), u, mode);
+
+    MPREAL_MSVC_DEBUGVIEW_CODE;
+}
+
 inline mpreal::mpreal(const unsigned long int u, mp_prec_t prec, mp_rnd_t mode)
 { 
     mpfr_init2 (mpfr_ptr(), prec);
@@ -699,22 +726,6 @@ inline mpreal::mpreal(const int u, mp_prec_t prec, mp_rnd_t mode)
 { 
     mpfr_init2 (mpfr_ptr(), prec);
     mpfr_set_si(mpfr_ptr(), u, mode);
-
-    MPREAL_MSVC_DEBUGVIEW_CODE;
-}
-
-inline mpreal::mpreal(const unsigned long long u, mp_prec_t prec, mp_rnd_t mode)
-{
-    mpfr_init2 (mpfr_ptr(), prec);
-    mpfr_set_uj(mpfr_ptr(), u, mode); 
-
-    MPREAL_MSVC_DEBUGVIEW_CODE;
-}
-
-inline mpreal::mpreal(const long long u, mp_prec_t prec, mp_rnd_t mode)
-{
-    mpfr_init2 (mpfr_ptr(), prec);
-    mpfr_set_sj(mpfr_ptr(), u, mode); 
 
     MPREAL_MSVC_DEBUGVIEW_CODE;
 }
@@ -999,6 +1010,22 @@ inline mpreal& mpreal::operator=(const unsigned int v)
     return *this;
 }
 
+inline mpreal& mpreal::operator=(const unsigned long long int v)    
+{    
+    mpfr_set_uj(mpfr_ptr(), v, mpreal::get_default_rnd());    
+
+    MPREAL_MSVC_DEBUGVIEW_CODE;
+    return *this;
+}
+
+inline mpreal& mpreal::operator=(const long long int v)    
+{    
+    mpfr_set_sj(mpfr_ptr(), v, mpreal::get_default_rnd());    
+
+    MPREAL_MSVC_DEBUGVIEW_CODE;
+    return *this;
+}
+
 inline mpreal& mpreal::operator=(const long int v)            
 {    
     mpfr_set_si(mpfr_ptr(), v, mpreal::get_default_rnd());    
@@ -1064,7 +1091,7 @@ inline mpreal& mpreal::operator=(const std::string& s)
 template <typename real_t> 
 inline mpreal& mpreal::operator= (const std::complex<real_t>& z)
 {
-    return *this = mpreal(z.real());
+    return *this = z.real();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1923,7 +1950,6 @@ inline mpreal& mpreal::setNan()
 
 inline mpreal&    mpreal::setZero(int sign)
 {
-
 #if (MPFR_VERSION >= MPFR_VERSION_NUM(3,0,0))
     mpfr_set_zero(mpfr_ptr(), sign);
 #else
@@ -1970,9 +1996,14 @@ inline const mpreal ldexp(const mpreal& v, mp_exp_t exp)
 {
     mpreal x(v);
 
-    // rounding is not important since we just increasing the exponent
+    // rounding is not important since we are just increasing the exponent (= exact operation)
     mpfr_mul_2si(x.mpfr_ptr(), x.mpfr_srcptr(), exp, mpreal::get_default_rnd()); 
     return x;
+}
+
+inline const mpreal scalbn(const mpreal& v, mp_exp_t exp)
+{
+    return ldexp(v, exp);
 }
 
 inline mpreal machine_epsilon(mp_prec_t prec)
@@ -2181,6 +2212,8 @@ inline const mpreal acos  (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd
 inline const mpreal asin  (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(asin );    }
 inline const mpreal atan  (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(atan );    }
 
+inline const mpreal logb  (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   return log2 (abs(x),r);                    }
+
 inline const mpreal acot  (const mpreal& v, mp_rnd_t r = mpreal::get_default_rnd()) {   return atan (1/v, r);                      }
 inline const mpreal asec  (const mpreal& v, mp_rnd_t r = mpreal::get_default_rnd()) {   return acos (1/v, r);                      }
 inline const mpreal acsc  (const mpreal& v, mp_rnd_t r = mpreal::get_default_rnd()) {   return asin (1/v, r);                      }
@@ -2320,16 +2353,15 @@ inline const mpreal agm (const mpreal& v1, const mpreal& v2, mp_rnd_t rnd_mode =
     return a;
 }
 
-inline const mpreal sum (const mpreal tab[], unsigned long int n, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
+inline const mpreal sum (const mpreal tab[], const unsigned long int n, int& status, mp_rnd_t mode = mpreal::get_default_rnd())
 {
-    mpreal x;
-    mpfr_ptr* t;
-    unsigned long int i;
+    mpfr_srcptr p[n];
 
-    t = new mpfr_ptr[n];
-    for (i=0;i<n;i++) t[i] = (mpfr_ptr)tab[i].mp;
-    mpfr_sum(x.mp,t,n,rnd_mode);
-    delete[] t;
+    for (int i = 0; i < n; i++) 
+        p[i] = tab[i].mpfr_srcptr();
+
+    mpreal x;
+    status = mpfr_sum(x.mpfr_ptr(), (mpfr_ptr*)p, n, mode);
     return x;
 }
 
