@@ -286,22 +286,6 @@ public:
     mpreal& operator>>=(const long int u);
     mpreal& operator>>=(const int u);
 
-    // Boolean Operators
-    friend bool operator >  (const mpreal& a, const mpreal& b);
-    friend bool operator >= (const mpreal& a, const mpreal& b);
-    friend bool operator <  (const mpreal& a, const mpreal& b);
-    friend bool operator <= (const mpreal& a, const mpreal& b);
-    friend bool operator == (const mpreal& a, const mpreal& b);
-    friend bool operator != (const mpreal& a, const mpreal& b);
-
-    // Optimized specializations for boolean operators
-    friend bool operator == (const mpreal& a, const unsigned long int b);
-    friend bool operator == (const mpreal& a, const unsigned int b);
-    friend bool operator == (const mpreal& a, const long int b);
-    friend bool operator == (const mpreal& a, const int b);
-    friend bool operator == (const mpreal& a, const long double b);
-    friend bool operator == (const mpreal& a, const double b);
-
     // Type Conversion operators
     bool               toBool      (                        )    const;
     long               toLong      (mp_rnd_t mode = GMP_RNDZ)    const;
@@ -1660,21 +1644,54 @@ inline const mpreal div_2si(const mpreal& v, long int k, mp_rnd_t rnd_mode)
 }
 
 //////////////////////////////////////////////////////////////////////////
-//Boolean operators
-inline bool operator >  (const mpreal& a, const mpreal& b){    return (mpfr_greater_p       (a.mpfr_srcptr(),b.mpfr_srcptr()) !=0 );    }
-inline bool operator >= (const mpreal& a, const mpreal& b){    return (mpfr_greaterequal_p  (a.mpfr_srcptr(),b.mpfr_srcptr()) !=0 );    }
-inline bool operator <  (const mpreal& a, const mpreal& b){    return (mpfr_less_p          (a.mpfr_srcptr(),b.mpfr_srcptr()) !=0 );    }
-inline bool operator <= (const mpreal& a, const mpreal& b){    return (mpfr_lessequal_p     (a.mpfr_srcptr(),b.mpfr_srcptr()) !=0 );    }
-inline bool operator == (const mpreal& a, const mpreal& b){    return (mpfr_equal_p         (a.mpfr_srcptr(),b.mpfr_srcptr()) !=0 );    }
-inline bool operator != (const mpreal& a, const mpreal& b){    return (mpfr_lessgreater_p   (a.mpfr_srcptr(),b.mpfr_srcptr()) !=0 );    }
+//Relational operators
+inline bool operator >  (const mpreal& a, const mpreal& b           ){  return (mpfr_greater_p(a.mpfr_srcptr(),b.mpfr_srcptr()) != 0 );            }
+inline bool operator >  (const mpreal& a, const unsigned long int b ){  return !isnan(a) && (mpfr_cmp_ui(a.mpfr_srcptr(),b) > 0 );                 }
+inline bool operator >  (const mpreal& a, const unsigned int b      ){  return !isnan(a) && (mpfr_cmp_ui(a.mpfr_srcptr(),b) > 0 );                 }
+inline bool operator >  (const mpreal& a, const long int b          ){  return !isnan(a) && (mpfr_cmp_si(a.mpfr_srcptr(),b) > 0 );                 }
+inline bool operator >  (const mpreal& a, const int b               ){  return !isnan(a) && (mpfr_cmp_si(a.mpfr_srcptr(),b) > 0 );                 }
+inline bool operator >  (const mpreal& a, const long double b       ){  return !isnan(a) && !(b != b) && (mpfr_cmp_ld(a.mpfr_srcptr(),b) > 0 );    }
+inline bool operator >  (const mpreal& a, const double b            ){  return !isnan(a) && !(b != b) && (mpfr_cmp_d (a.mpfr_srcptr(),b) > 0 );    }
 
-inline bool operator == (const mpreal& a, const unsigned long int b ){    return (mpfr_cmp_ui(a.mpfr_srcptr(),b) == 0 );    }
-inline bool operator == (const mpreal& a, const unsigned int b      ){    return (mpfr_cmp_ui(a.mpfr_srcptr(),b) == 0 );    }
-inline bool operator == (const mpreal& a, const long int b          ){    return (mpfr_cmp_si(a.mpfr_srcptr(),b) == 0 );    }
-inline bool operator == (const mpreal& a, const int b               ){    return (mpfr_cmp_si(a.mpfr_srcptr(),b) == 0 );    }
-inline bool operator == (const mpreal& a, const long double b       ){    return (mpfr_cmp_ld(a.mpfr_srcptr(),b) == 0 );    }
-inline bool operator == (const mpreal& a, const double b            ){    return (mpfr_cmp_d (a.mpfr_srcptr(),b) == 0 );    }
+inline bool operator >= (const mpreal& a, const mpreal& b           ){  return (mpfr_greaterequal_p(a.mpfr_srcptr(),b.mpfr_srcptr()) != 0 );       }
+inline bool operator >= (const mpreal& a, const unsigned long int b ){  return !isnan(a) && (mpfr_cmp_ui(a.mpfr_srcptr(),b) >= 0 );                }
+inline bool operator >= (const mpreal& a, const unsigned int b      ){  return !isnan(a) && (mpfr_cmp_ui(a.mpfr_srcptr(),b) >= 0 );                }
+inline bool operator >= (const mpreal& a, const long int b          ){  return !isnan(a) && (mpfr_cmp_si(a.mpfr_srcptr(),b) >= 0 );                }
+inline bool operator >= (const mpreal& a, const int b               ){  return !isnan(a) && (mpfr_cmp_si(a.mpfr_srcptr(),b) >= 0 );                }
+inline bool operator >= (const mpreal& a, const long double b       ){  return !isnan(a) && !(b != b) && (mpfr_cmp_ld(a.mpfr_srcptr(),b) >= 0 );   }
+inline bool operator >= (const mpreal& a, const double b            ){  return !isnan(a) && !(b != b) && (mpfr_cmp_d (a.mpfr_srcptr(),b) >= 0 );   }
 
+inline bool operator <  (const mpreal& a, const mpreal& b           ){  return (mpfr_less_p(a.mpfr_srcptr(),b.mpfr_srcptr()) != 0 );               }
+inline bool operator <  (const mpreal& a, const unsigned long int b ){  return !isnan(a) && (mpfr_cmp_ui(a.mpfr_srcptr(),b) < 0 );                 }
+inline bool operator <  (const mpreal& a, const unsigned int b      ){  return !isnan(a) && (mpfr_cmp_ui(a.mpfr_srcptr(),b) < 0 );                 }
+inline bool operator <  (const mpreal& a, const long int b          ){  return !isnan(a) && (mpfr_cmp_si(a.mpfr_srcptr(),b) < 0 );                 }
+inline bool operator <  (const mpreal& a, const int b               ){  return !isnan(a) && (mpfr_cmp_si(a.mpfr_srcptr(),b) < 0 );                 }
+inline bool operator <  (const mpreal& a, const long double b       ){  return !isnan(a) && !(b != b) && (mpfr_cmp_ld(a.mpfr_srcptr(),b) < 0 );    }
+inline bool operator <  (const mpreal& a, const double b            ){  return !isnan(a) && !(b != b) && (mpfr_cmp_d (a.mpfr_srcptr(),b) < 0 );    }
+
+inline bool operator <= (const mpreal& a, const mpreal& b           ){  return (mpfr_lessequal_p(a.mpfr_srcptr(),b.mpfr_srcptr()) != 0 );          }
+inline bool operator <= (const mpreal& a, const unsigned long int b ){  return !isnan(a) && (mpfr_cmp_ui(a.mpfr_srcptr(),b) <= 0 );                }
+inline bool operator <= (const mpreal& a, const unsigned int b      ){  return !isnan(a) && (mpfr_cmp_ui(a.mpfr_srcptr(),b) <= 0 );                }
+inline bool operator <= (const mpreal& a, const long int b          ){  return !isnan(a) && (mpfr_cmp_si(a.mpfr_srcptr(),b) <= 0 );                }
+inline bool operator <= (const mpreal& a, const int b               ){  return !isnan(a) && (mpfr_cmp_si(a.mpfr_srcptr(),b) <= 0 );                }
+inline bool operator <= (const mpreal& a, const long double b       ){  return !isnan(a) && !(b != b) && (mpfr_cmp_ld(a.mpfr_srcptr(),b) <= 0 );   }
+inline bool operator <= (const mpreal& a, const double b            ){  return !isnan(a) && !(b != b) && (mpfr_cmp_d (a.mpfr_srcptr(),b) <= 0 );   }
+
+inline bool operator == (const mpreal& a, const mpreal& b           ){  return (mpfr_equal_p(a.mpfr_srcptr(),b.mpfr_srcptr()) != 0 );              }
+inline bool operator == (const mpreal& a, const unsigned long int b ){  return !isnan(a) && (mpfr_cmp_ui(a.mpfr_srcptr(),b) == 0 );                }
+inline bool operator == (const mpreal& a, const unsigned int b      ){  return !isnan(a) && (mpfr_cmp_ui(a.mpfr_srcptr(),b) == 0 );                }
+inline bool operator == (const mpreal& a, const long int b          ){  return !isnan(a) && (mpfr_cmp_si(a.mpfr_srcptr(),b) == 0 );                }
+inline bool operator == (const mpreal& a, const int b               ){  return !isnan(a) && (mpfr_cmp_si(a.mpfr_srcptr(),b) == 0 );                }
+inline bool operator == (const mpreal& a, const long double b       ){  return !isnan(a) && !(b != b) && (mpfr_cmp_ld(a.mpfr_srcptr(),b) == 0 );   }
+inline bool operator == (const mpreal& a, const double b            ){  return !isnan(a) && !(b != b) && (mpfr_cmp_d (a.mpfr_srcptr(),b) == 0 );   }
+
+inline bool operator != (const mpreal& a, const mpreal& b           ){  return !(a == b);  }
+inline bool operator != (const mpreal& a, const unsigned long int b ){  return !(a == b);  }
+inline bool operator != (const mpreal& a, const unsigned int b      ){  return !(a == b);  }
+inline bool operator != (const mpreal& a, const long int b          ){  return !(a == b);  }
+inline bool operator != (const mpreal& a, const int b               ){  return !(a == b);  }
+inline bool operator != (const mpreal& a, const long double b       ){  return !(a == b);  }
+inline bool operator != (const mpreal& a, const double b            ){  return !(a == b);  }
 
 inline bool isnan    (const mpreal& op){    return (mpfr_nan_p    (op.mpfr_srcptr()) != 0 );    }
 inline bool isinf    (const mpreal& op){    return (mpfr_inf_p    (op.mpfr_srcptr()) != 0 );    }
@@ -1948,7 +1965,7 @@ inline mpreal& mpreal::setNan()
     return *this;
 }
 
-inline mpreal&    mpreal::setZero(int sign)
+inline mpreal& mpreal::setZero(int sign)
 {
 #if (MPFR_VERSION >= MPFR_VERSION_NUM(3,0,0))
     mpfr_set_zero(mpfr_ptr(), sign);
