@@ -2385,7 +2385,7 @@ inline const mpreal sum (const mpreal tab[], const unsigned long int n, int& sta
 {
     mpfr_srcptr p[n];
 
-    for (int i = 0; i < n; i++) 
+    for (unsigned long int  i = 0; i < n; i++) 
         p[i] = tab[i].mpfr_srcptr();
 
     mpreal x;
