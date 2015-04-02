@@ -1,18 +1,93 @@
+2015-04-02  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Added warning to stress out the required IEEE compliance, bumped
+	version.
+	[d1d8630400d7] [tip]
+
+2015-04-01  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* Merged to have README.md
+	[f64dc82740e3]
+
+	* README.md:
+	README.md edited online with Bitbucket
+	[c2c4fc23e7ff]
+
+	* mpreal.h:
+	Fixed and extended relational operators.
+	[4a1308912e53]
+
+2015-03-20  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Added fast zero, logb, scalbn. Fixed sum and other minor changes.
+	[a3680b1e7035]
+
+2015-01-06  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Added converter from std::complex scalars
+	[04bb2944d39f]
+
+2014-12-09  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Added "tgamma" for conformance with C++11
+	[cd7d3a58ec04]
+
+2014-10-21  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Fixed detection of "explicit converters" support by GCC.
+	[747851110144]
+
 2014-10-10  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* .hgtags:
+	Moved tag mpfrc++-3.6.1 to changeset e1be08860b61 (from changeset
+	b96247a1ab1b)
+	[6e38941f1a02]
+
+	* FOSS License Exception.txt, FOSSLicenseException.txt:
+	FOSS license file is renamed
+	[e1be08860b61] [mpfrc++-3.6.1]
+
+	* .hgtags:
+	Added tag mpfrc++-3.6.1 for changeset b96247a1ab1b
+	[eea219d51f89]
+
+	* mpreal.h:
+	Fixed micro-version number
+	[b96247a1ab1b]
+
+	* .hgtags:
+	Moved tag mpfrc++-3.6.0 to changeset f7c491ba598d (from changeset
+	4bd12a575301)
+	[ec93a0c33cfb]
+
+	* .hgtags:
+	Moved tag mpfrc++-3.6.0 to changeset 4bd12a575301 (from changeset
+	2d60dbf27e9d)
+	[a466a3ad8e3f]
+
+	* changelog:
+	Updated changelog
+	[4bd12a575301]
 
 	* FOSS License Exception.txt, example/example.cpp, mpreal.h:
 	Fixed error in signum (sgn) function.
-	[39b74057b225] [tip]
+	[39b74057b225]
 
 2014-10-05  Pavel Holoborodko  <pavel@holoborodko.com>
 
 	* .hgtags:
 	Added tag mpfrc++-3.6.0 for changeset 2d60dbf27e9d
-	[f7c491ba598d]
+	[f7c491ba598d] [mpfrc++-3.6.0]
 
 	* mpreal.h:
 	Updated version signature
-	[2d60dbf27e9d] [mpfrc++-3.6.0]
+	[2d60dbf27e9d]
 
 	* .hgtags:
 	Removed tag mpfrc++-3.5.9
