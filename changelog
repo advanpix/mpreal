@@ -1,9 +1,27 @@
+2015-04-13  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* FOSSLicenseException.txt, mpreal.h:
+	Version number has been fixed.
+	[c3344cebf10a] [tip]
+
 2015-04-02  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Fixe to avoid a ton of signed/unsigned comparison warnings
+	[bc195293ab38]
+
+	* .hgtags:
+	Added tag mpfrc++-3.6.2 for changeset 7b05afee0747
+	[fdaee78b0b66]
+
+	* changelog:
+	Updated changelog before new version release
+	[7b05afee0747] [mpfrc++-3.6.2]
 
 	* mpreal.h:
 	Added warning to stress out the required IEEE compliance, bumped
 	version.
-	[d1d8630400d7] [tip]
+	[d1d8630400d7]
 
 2015-04-01  Pavel Holoborodko  <pavel@holoborodko.com>
 
