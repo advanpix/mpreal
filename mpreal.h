@@ -2383,13 +2383,15 @@ inline const mpreal agm (const mpreal& v1, const mpreal& v2, mp_rnd_t rnd_mode =
 
 inline const mpreal sum (const mpreal tab[], const unsigned long int n, int& status, mp_rnd_t mode = mpreal::get_default_rnd())
 {
-    mpfr_srcptr p[n];
+    mpfr_srcptr *p = new mpfr_srcptr[n];
 
-    for (unsigned long int  i = 0; i < n; i++) 
+    for (unsigned long int  i = 0; i < n; i++)
         p[i] = tab[i].mpfr_srcptr();
 
     mpreal x;
     status = mpfr_sum(x.mpfr_ptr(), (mpfr_ptr*)p, n, mode);
+    
+    delete [] p;
     return x;
 }
 
