@@ -58,6 +58,7 @@
 #include <limits>
 #include <cstdint>
 #include <complex>
+#include <algorithm>
 
 // Options
 #define MPREAL_HAVE_MSVC_DEBUGVIEW              // Enable Debugger Visualizer for "Debug" builds in MSVC.
