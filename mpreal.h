@@ -439,11 +439,6 @@ public:
     // Check urandom() for more precise control.
     friend const mpreal random(unsigned int seed);
 
-    // Exponent and mantissa manipulation
-    friend const mpreal frexp (const mpreal& v, mp_exp_t* exp);    
-    friend const mpreal ldexp (const mpreal& v, mp_exp_t exp);
-    friend const mpreal scalbn(const mpreal& v, mp_exp_t exp);
-
     // Splits mpreal value into fractional and integer parts.
     // Returns fractional part and stores integer part in n.
     friend const mpreal modf(const mpreal& v, mpreal& n);    
@@ -2013,12 +2008,16 @@ inline int mpreal::set_exp (mp_exp_t e)
     return x;
 }
 
-inline const mpreal frexp(const mpreal& v, mp_exp_t* exp)
+inline const mpreal frexp(const mpreal& x, mp_exp_t* exp, mp_rnd_t mode = mpreal::get_default_rnd())
 {
-    mpreal x(v);
-    *exp = x.get_exp();
-    x.set_exp(0);
-    return x;
+    mpreal y(x);
+#if (MPFR_VERSION >= MPFR_VERSION_NUM(3,1,0))
+    mpfr_frexp(exp,y.mpfr_ptr(),x.mpfr_srcptr(),mode);
+#else
+    *exp = mpfr_get_exp(y.mpfr_srcptr());
+    mpfr_set_exp(y.mpfr_ptr(),0);
+#endif
+    return y;
 }
 
 inline const mpreal ldexp(const mpreal& v, mp_exp_t exp)
