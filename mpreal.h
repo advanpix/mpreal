@@ -56,9 +56,9 @@
 #include <cmath>
 #include <cstring>
 #include <limits>
-#include <cstdint>
 #include <complex>
 #include <algorithm>
+#include <stdint.h>
 
 // Options
 #define MPREAL_HAVE_MSVC_DEBUGVIEW              // Enable Debugger Visualizer for "Debug" builds in MSVC.
@@ -150,7 +150,7 @@ public:
     
     // Get default rounding mode & precision
     inline static mp_rnd_t   get_default_rnd()    {    return (mp_rnd_t)(mpfr_get_default_rounding_mode());       }
-    inline static mp_prec_t  get_default_prec()   {    return mpfr_get_default_prec();                            }
+    inline static mp_prec_t  get_default_prec()   {    return (mpfr_get_default_prec)();                          }
 
     // Constructors && type conversions
     mpreal();
