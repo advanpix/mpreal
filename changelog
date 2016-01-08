@@ -1,8 +1,58 @@
+2016-01-08  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Switched to stdint.h for C++03 compatibility, added guard brackets
+	for mpfr_get_default_prec
+	[e8204db924a8] [tip]
+
+2015-09-26  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Updated frexp, code clean-up.
+	[a396b360259d]
+
+2015-07-24  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Included <algorithm> for std::min/max.
+	[eac86fd487c8]
+
+2015-05-28  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* README.md:
+	Updated the readme
+	[248da9fd5d83]
+
+	* mpreal.h:
+	Fixed incompatibility with MSVC in array sum function. Thanks to
+	Brian Gladman for reporting the issue.
+	[a25d66dbb157]
+
+2015-04-16  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Increased number of digits in string conversion to guarantee
+	accurate recovery
+	[5207228dbf21]
+
 2015-04-13  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* README.md:
+	Minor edits to README.md
+	[2ad0118738df]
+
+	* .hgtags:
+	Moved tag mpfrc++-3.6.2 to changeset 729ef0273599 (from changeset
+	7b05afee0747)
+	[b1c40b105095]
+
+	* changelog:
+	Changelog update to match the current version
+	[729ef0273599] [mpfrc++-3.6.2]
 
 	* FOSSLicenseException.txt, mpreal.h:
 	Version number has been fixed.
-	[c3344cebf10a] [tip]
+	[c3344cebf10a]
 
 2015-04-02  Pavel Holoborodko  <pavel@holoborodko.com>
 
@@ -16,7 +66,7 @@
 
 	* changelog:
 	Updated changelog before new version release
-	[7b05afee0747] [mpfrc++-3.6.2]
+	[7b05afee0747]
 
 	* mpreal.h:
 	Added warning to stress out the required IEEE compliance, bumped
