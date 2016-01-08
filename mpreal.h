@@ -69,8 +69,8 @@
 // Library version
 #define MPREAL_VERSION_MAJOR 3
 #define MPREAL_VERSION_MINOR 6
-#define MPREAL_VERSION_PATCHLEVEL 2
-#define MPREAL_VERSION_STRING "3.6.2"
+#define MPREAL_VERSION_PATCHLEVEL 3
+#define MPREAL_VERSION_STRING "3.6.3"
 
 // Detect compiler using signatures from http://predef.sourceforge.net/
 #if defined(__GNUC__) && defined(__INTEL_COMPILER)
