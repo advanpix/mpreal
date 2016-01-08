@@ -13,7 +13,7 @@
     Pere Constans, Peter van Hoof, Gael Guennebaud, Tsai Chia Cheng, 
     Alexei Zubanov, Jauhien Piatlicki, Victor Berger, John Westwood,
     Petr Aleksandrov, Orion Poplawski, Charles Karney, Arash Partow,
-    Rodney James, Jorge Leitao.
+    Rodney James, Jorge Leitao, Jerome Benoit.
 
     Licensing:
     (A) MPFR C++ is under GNU General Public License ("GPL").
