@@ -1,9 +1,17 @@
 2016-01-08  Pavel Holoborodko  <pavel@holoborodko.com>
 
 	* mpreal.h:
+	Updated the version number to 3.6.3
+	[89279de50ec6] [tip]
+
+	* changelog:
+	Updated the changelog
+	[71d9c011d909]
+
+	* mpreal.h:
 	Switched to stdint.h for C++03 compatibility, added guard brackets
 	for mpfr_get_default_prec
-	[e8204db924a8] [tip]
+	[e8204db924a8]
 
 2015-09-26  Pavel Holoborodko  <pavel@holoborodko.com>
 
