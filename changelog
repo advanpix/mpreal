@@ -1,8 +1,32 @@
 2016-01-08  Pavel Holoborodko  <pavel@holoborodko.com>
 
 	* mpreal.h:
+	Updated list of contributors.
+	[c247cf9d59a0] [tip]
+
+	* mpreal.h:
+	Updated copyright notice
+	[82c2ecd78875]
+
+	* .hgtags:
+	Added tag mpfrc++-3.6.3 for changeset 89bef2abf54b
+	[025578cf1a20]
+
+	* .hgtags:
+	Removed tag 3.6.3
+	[84c53970adaa]
+
+	* .hgtags:
+	Added tag 3.6.3 for changeset 7ffcad32c02b
+	[89bef2abf54b] [mpfrc++-3.6.3]
+
+	* changelog:
+	All set for the new release
+	[7ffcad32c02b]
+
+	* mpreal.h:
 	Updated the version number to 3.6.3
-	[89279de50ec6] [tip]
+	[89279de50ec6]
 
 	* changelog:
 	Updated the changelog
