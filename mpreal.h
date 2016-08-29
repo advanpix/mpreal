@@ -103,7 +103,8 @@
 // Detect support for explicit converters. 
 #if (__has_feature(cxx_explicit_conversions) || \
        (defined(__GXX_EXPERIMENTAL_CXX0X__) && __GNUC_MINOR >= 5) || __cplusplus >= 201103L || \
-       (defined(_MSC_VER) && _MSC_VER >= 1800))
+       (defined(_MSC_VER) && _MSC_VER >= 1800) || \
+       (defined(__INTEL_COMPILER) && __INTEL_COMPILER >= 1300))
 
     #define MPREAL_HAVE_EXPLICIT_CONVERTERS
 #endif
@@ -357,6 +358,8 @@ public:
     friend const mpreal log1p(const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal expm1(const mpreal& v, mp_rnd_t rnd_mode);
 
+    friend const mpreal nextpow2(const mpreal& v, mp_rnd_t rnd_mode);
+
     friend const mpreal cos(const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal sin(const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal tan(const mpreal& v, mp_rnd_t rnd_mode);
@@ -408,7 +411,7 @@ public:
     friend const mpreal fms      (const mpreal& v1, const mpreal& v2, const mpreal& v3, mp_rnd_t rnd_mode);
     friend const mpreal agm      (const mpreal& v1, const mpreal& v2, mp_rnd_t rnd_mode);
     friend const mpreal sum      (const mpreal tab[], const unsigned long int n, int& status, mp_rnd_t rnd_mode);
-    friend int sgn(const mpreal& v); // returns -1 or +1
+    friend int          sgn      (const mpreal& v);
 
 // MPFR 2.4.0 Specifics
 #if (MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0))
@@ -512,7 +515,7 @@ public:
     mpreal&        setSign (int Sign, mp_rnd_t RoundingMode = get_default_rnd());
 
     //Exponent
-    mp_exp_t get_exp();
+    mp_exp_t get_exp() const;
     int set_exp(mp_exp_t e);
     int check_range  (int t, mp_rnd_t rnd_mode = get_default_rnd());
     int subnormalize (int t, mp_rnd_t rnd_mode = get_default_rnd());
@@ -1765,7 +1768,7 @@ inline std::string mpreal::toString(int n, int b, mp_rnd_t mode) const
 
     std::ostringstream format;
 
-    int digits = (n >= 0) ? n : 1 + bits2digits(mpfr_get_prec(mpfr_srcptr()));
+    int digits = (n >= 0) ? n : 2 + bits2digits(mpfr_get_prec(mpfr_srcptr()));
     
     format << "%." << digits << "RNg";
 
@@ -1934,14 +1937,9 @@ inline int bits2digits(mp_prec_t b)
 
 //////////////////////////////////////////////////////////////////////////
 // Set/Get number properties
-inline int sgn(const mpreal& op)
-{
-    return mpfr_sgn(op.mpfr_srcptr());
-}
-
 inline mpreal& mpreal::setSign(int sign, mp_rnd_t RoundingMode)
 {
-    mpfr_setsign(mpfr_ptr(), mpfr_srcptr(), (sign < 0 ? 1 : 0), RoundingMode);
+    mpfr_setsign(mpfr_ptr(), mpfr_srcptr(), sign < 0, RoundingMode);
     MPREAL_MSVC_DEBUGVIEW_CODE;
     return *this;
 }
@@ -1996,7 +1994,7 @@ inline void mpreal::set_prec(mp_prec_t prec, mp_rnd_t rnd_mode)
     MPREAL_MSVC_DEBUGVIEW_CODE;
 }
 
-inline mp_exp_t mpreal::get_exp ()
+inline mp_exp_t mpreal::get_exp () const
 {
     return mpfr_get_exp(mpfr_srcptr());
 }
@@ -2092,6 +2090,12 @@ inline mpreal copysign(const mpreal& x, const  mpreal& y, mp_rnd_t rnd_mode = mp
 inline bool signbit(const mpreal& x)
 {
     return mpfr_signbit(x.mpfr_srcptr());
+}
+
+inline mpreal& setsignbit(mpreal& x, bool minus, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
+{
+    mpfr_setsign(x.mpfr_ptr(), x.mpfr_srcptr(), minus, rnd_mode);
+    return x;
 }
 
 inline const mpreal modf(const mpreal& v, mpreal& n)
@@ -2273,6 +2277,16 @@ inline const mpreal besselj1(const mpreal& x, mp_rnd_t r = mpreal::get_default_r
 inline const mpreal bessely0(const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(y0     );    }
 inline const mpreal bessely1(const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(y1     );    }
 
+inline const mpreal nextpow2(const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) 
+{   
+    mpreal y(0, x.getPrecision());
+
+    if(!iszero(x)) 
+        y = ceil(log2(abs(x,r),r));
+
+    return y;
+}
+
 inline const mpreal atan2 (const mpreal& y, const mpreal& x, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
 {
     mpreal a(0,(std::max)(y.getPrecision(), x.getPrecision()));
@@ -2285,6 +2299,44 @@ inline const mpreal hypot (const mpreal& x, const mpreal& y, mp_rnd_t rnd_mode =
     mpreal a(0,(std::max)(y.getPrecision(), x.getPrecision()));
     mpfr_hypot(a.mpfr_ptr(), x.mpfr_srcptr(), y.mpfr_srcptr(), rnd_mode);
     return a;
+}
+
+inline const mpreal hypot(const mpreal& a, const mpreal& b, const mpreal& c, mp_rnd_t rnd_mode = mpreal::get_default_rnd())  
+{
+    if(isnan(a) || isnan(b) || isnan(c)) return mpreal().setNan();
+    else
+    {
+        mpreal absa = abs(a), absb = abs(b), absc = abs(c);
+        mpreal w = (std::max)(absa, (std::max)(absb, absc));
+        mpreal r;
+
+        if (!iszero(w))
+        {
+            mpreal iw = 1/w;
+            r = w * sqrt(sqr(absa*iw) + sqr(absb*iw) + sqr(absc*iw));
+        }
+
+        return r; 
+    }
+}
+
+inline const mpreal hypot(const mpreal& a, const mpreal& b, const mpreal& c, const mpreal& d)  
+{
+    if(isnan(a) || isnan(b) || isnan(c) || isnan(d)) return mpreal().setNan();
+    else
+    {
+        mpreal absa = abs(a), absb = abs(b), absc = abs(c), absd = abs(d);
+        mpreal w = (std::max)(absa, (std::max)(absb, (std::max)(absc, absd)));
+        mpreal r;
+
+        if (!iszero(w))
+        {
+            mpreal iw = 1/w;
+            r = w * sqrt(sqr(absa*iw) + sqr(absb*iw) + sqr(absc*iw) + sqr(absd*iw));
+        }
+
+        return r; 
+    }
 }
 
 inline const mpreal remainder (const mpreal& x, const mpreal& y, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
@@ -2434,10 +2486,8 @@ inline const mpreal mod (const mpreal& x, const mpreal& y, mp_rnd_t rnd_mode = m
     if(x == y) return 0;
 
     mpreal m = x - floor(x / y) * y;
-    
-    m.setSign(sgn(y)); // make sure result has the same sign as Y
 
-    return m;
+    return copysign(abs(m),y); // make sure result has the same sign as Y
 }
 
 inline const mpreal fmod (const mpreal& x, const mpreal& y, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
@@ -2543,6 +2593,15 @@ inline const mpreal rint_floor (const mpreal& x, mp_rnd_t r = mpreal::get_defaul
 inline const mpreal rint_round (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(rint_round);     }
 inline const mpreal rint_trunc (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(rint_trunc);     }
 inline const mpreal frac       (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(frac      );     }
+
+//////////////////////////////////////////////////////////////////////////
+// Miscellaneous Functions
+inline int sgn(const mpreal& op)
+{
+    // Please note, this is classic signum function which ignores sign of zero.
+    // Use signbit if you need sign of zero.
+    return mpfr_sgn(op.mpfr_srcptr());
+}
 
 //////////////////////////////////////////////////////////////////////////
 // Miscellaneous Functions
