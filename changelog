@@ -1,8 +1,36 @@
+2016-08-29  Pavel Holoborodko  <pavel@advanpix.com>
+
+	* .hgtags:
+	Added tag 3.6.4 for changeset f961c1f3af6c
+	[1b5a28d2f1f9] [tip]
+
+	* mpreal.h:
+	Bumped version to 3.6.4
+	[f961c1f3af6c] [3.6.4]
+
+	* mpreal.h:
+	Added nextpow2, setsignbit and 3-4 argument hypot with protection
+	agains overflow. Improved compatibility with Intel compilers, fixed
+	get_exp().
+	[7b6762157fcd]
+
 2016-01-08  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* .hgtags:
+	Added tag mpfrc++-3.6.3 for changeset bed0adf08642
+	[cbda4ff8f6b2]
+
+	* .hgtags:
+	Removed tag mpfrc++-3.6.3
+	[bed0adf08642] [mpfrc++-3.6.3]
+
+	* changelog:
+	Updated the changelog
+	[d9a805ac7da5]
 
 	* mpreal.h:
 	Updated list of contributors.
-	[c247cf9d59a0] [tip]
+	[c247cf9d59a0]
 
 	* mpreal.h:
 	Updated copyright notice
@@ -18,7 +46,7 @@
 
 	* .hgtags:
 	Added tag 3.6.3 for changeset 7ffcad32c02b
-	[89bef2abf54b] [mpfrc++-3.6.3]
+	[89bef2abf54b]
 
 	* changelog:
 	All set for the new release
