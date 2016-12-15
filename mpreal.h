@@ -69,8 +69,8 @@
 // Library version
 #define MPREAL_VERSION_MAJOR 3
 #define MPREAL_VERSION_MINOR 6
-#define MPREAL_VERSION_PATCHLEVEL 4
-#define MPREAL_VERSION_STRING "3.6.4"
+#define MPREAL_VERSION_PATCHLEVEL 5
+#define MPREAL_VERSION_STRING "3.6.5"
 
 // Detect compiler using signatures from http://predef.sourceforge.net/
 #if defined(__GNUC__) && defined(__INTEL_COMPILER)
@@ -88,10 +88,13 @@
     #define __has_feature(x) 0
 #endif
 
-// Detect support for r-value references (move semantic). Borrowed from Eigen.
+// Detect support for r-value references (move semantic).
+// Move semantic should be enabled with great care in multi-threading environments,
+// especially if MPFR uses custom memory allocators.
+// Everything should be thread-safe and support passing ownership over thread boundary.
 #if (__has_feature(cxx_rvalue_references) || \
        defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L || \
-      (defined(_MSC_VER) && _MSC_VER >= 1600))
+      (defined(_MSC_VER) && _MSC_VER >= 1600) && !defined(MPREAL_DISABLE_MOVE_SEMANTIC))
 
     #define MPREAL_HAVE_MOVE_SUPPORT
 
@@ -131,7 +134,7 @@
                                                 // = -1 disables overflow checks (default)
 
 // Fast replacement for mpfr_set_zero(x, +1):
-// (a) uses low-level data members, might not be compatible with new versions of MPFR
+// (a) uses low-level data members, might not be forward compatible
 // (b) sign is not set, add (x)->_mpfr_sign = 1;
 #define mpfr_set_zero_fast(x)  ((x)->_mpfr_exp = __MPFR_EXP_ZERO)
 
@@ -586,7 +589,7 @@ inline mpreal::mpreal(const mpreal& u)
 #ifdef MPREAL_HAVE_MOVE_SUPPORT
 inline mpreal::mpreal(mpreal&& other)
 {
-    mpfr_set_uninitialized(mpfr_ptr());     // make sure "other" holds no pointer to actual data 
+    mpfr_set_uninitialized(mpfr_ptr());      // make sure "other" holds null-pointer (in uninitialized state)
     mpfr_swap(mpfr_ptr(), other.mpfr_ptr());
 
     MPREAL_MSVC_DEBUGVIEW_CODE;
@@ -594,9 +597,11 @@ inline mpreal::mpreal(mpreal&& other)
 
 inline mpreal& mpreal::operator=(mpreal&& other)
 {
-    mpfr_swap(mpfr_ptr(), other.mpfr_ptr());
-
-    MPREAL_MSVC_DEBUGVIEW_CODE;
+    if (this != &other)
+    {
+        mpfr_swap(mpfr_ptr(), other.mpfr_ptr()); // destructor for "other" will be called just afterwards
+        MPREAL_MSVC_DEBUGVIEW_CODE;
+    }
     return *this;
 }
 #endif
@@ -2301,7 +2306,7 @@ inline const mpreal hypot (const mpreal& x, const mpreal& y, mp_rnd_t rnd_mode =
     return a;
 }
 
-inline const mpreal hypot(const mpreal& a, const mpreal& b, const mpreal& c, mp_rnd_t rnd_mode = mpreal::get_default_rnd())  
+inline const mpreal hypot(const mpreal& a, const mpreal& b, const mpreal& c)  
 {
     if(isnan(a) || isnan(b) || isnan(c)) return mpreal().setNan();
     else
@@ -2605,7 +2610,7 @@ inline int sgn(const mpreal& op)
 
 //////////////////////////////////////////////////////////////////////////
 // Miscellaneous Functions
-inline void         swap (mpreal& a, mpreal& b)            {    mpfr_swap(a.mp,b.mp);   }
+inline void         swap (mpreal& a, mpreal& b)            {    mpfr_swap(a.mpfr_ptr(),b.mpfr_ptr());   }
 inline const mpreal (max)(const mpreal& x, const mpreal& y){    return (x>y?x:y);       }
 inline const mpreal (min)(const mpreal& x, const mpreal& y){    return (x<y?x:y);       }
 
@@ -2698,12 +2703,17 @@ inline const mpreal random(unsigned int seed = 0)
 
 #if (MPFR_VERSION >= MPFR_VERSION_NUM(3,1,0))
 
+// TODO: 
+// Use mpfr_nrandom since mpfr_grandom is deprecated
+#pragma warning( push )
+#pragma warning( disable : 1478)
 inline const mpreal grandom (gmp_randstate_t& state, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
 {
     mpreal x;
     mpfr_grandom(x.mpfr_ptr(), NULL, state, rnd_mode);
     return x;
 }
+#pragma warning( pop )
 
 inline const mpreal grandom(unsigned int seed = 0)
 {
