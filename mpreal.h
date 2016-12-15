@@ -2705,15 +2705,19 @@ inline const mpreal random(unsigned int seed = 0)
 
 // TODO: 
 // Use mpfr_nrandom since mpfr_grandom is deprecated
+#if defined(_MSC_VER)
 #pragma warning( push )
 #pragma warning( disable : 1478)
+#endif
 inline const mpreal grandom (gmp_randstate_t& state, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
 {
     mpreal x;
     mpfr_grandom(x.mpfr_ptr(), NULL, state, rnd_mode);
     return x;
 }
+#if defined(_MSC_VER)
 #pragma warning( pop )
+#endif
 
 inline const mpreal grandom(unsigned int seed = 0)
 {
