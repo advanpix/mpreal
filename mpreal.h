@@ -2023,6 +2023,14 @@ inline const mpreal frexp(const mpreal& x, mp_exp_t* exp, mp_rnd_t mode = mpreal
     return y;
 }
 
+inline const mpreal frexp(const mpreal& x, int* exp, mp_rnd_t mode = mpreal::get_default_rnd())
+{
+    mp_exp_t expl;
+    mpreal y = frexp(x, &expl, mode);
+    *exp = int(expl);
+    return y;
+}
+
 inline const mpreal ldexp(const mpreal& v, mp_exp_t exp)
 {
     mpreal x(v);
