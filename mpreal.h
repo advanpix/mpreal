@@ -2720,7 +2720,11 @@ inline const mpreal random(unsigned int seed = 0)
 inline const mpreal grandom (gmp_randstate_t& state, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
 {
     mpreal x;
+#if (MPFR_VERSION >= MPFR_VERSION_NUM(4,0,0))
+    mpfr_nrandom(x.mpfr_ptr(), state, rnd_mode);
+#else
     mpfr_grandom(x.mpfr_ptr(), NULL, state, rnd_mode);
+#endif
     return x;
 }
 #if defined(_MSC_VER)
