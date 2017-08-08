@@ -354,6 +354,7 @@ public:
     friend const mpreal log  (const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal log2 (const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal logb (const mpreal& v, mp_rnd_t rnd_mode);
+    friend const mp_exp_t ilogb(const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal log10(const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal exp  (const mpreal& v, mp_rnd_t rnd_mode); 
     friend const mpreal exp2 (const mpreal& v, mp_rnd_t rnd_mode);
@@ -2258,6 +2259,7 @@ inline const mpreal asin  (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd
 inline const mpreal atan  (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(atan );    }
 
 inline const mpreal logb  (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   return log2 (abs(x),r);                    }
+inline const mp_exp_t ilogb(const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) { return x.get_exp(); }
 
 inline const mpreal acot  (const mpreal& v, mp_rnd_t r = mpreal::get_default_rnd()) {   return atan (1/v, r);                      }
 inline const mpreal asec  (const mpreal& v, mp_rnd_t r = mpreal::get_default_rnd()) {   return acos (1/v, r);                      }
