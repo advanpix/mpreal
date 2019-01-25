@@ -5,7 +5,7 @@
     Project homepage:    http://www.holoborodko.com/pavel/mpfr
     Contact e-mail:      pavel@holoborodko.com
 
-    Copyright (c) 2008-2016 Pavel Holoborodko
+    Copyright (c) 2008-2019 Pavel Holoborodko
 
     Contributors:
     Dmitriy Gubanov, Konstantin Holoborodko, Brian Gladman, 
@@ -13,7 +13,7 @@
     Pere Constans, Peter van Hoof, Gael Guennebaud, Tsai Chia Cheng, 
     Alexei Zubanov, Jauhien Piatlicki, Victor Berger, John Westwood,
     Petr Aleksandrov, Orion Poplawski, Charles Karney, Arash Partow,
-    Rodney James, Jorge Leitao, Jerome Benoit.
+    Rodney James, Jorge Leitao, Jerome Benoit, Michal Maly.
 
     Licensing:
     (A) MPFR C++ is under GNU General Public License ("GPL").
@@ -69,8 +69,8 @@
 // Library version
 #define MPREAL_VERSION_MAJOR 3
 #define MPREAL_VERSION_MINOR 6
-#define MPREAL_VERSION_PATCHLEVEL 5
-#define MPREAL_VERSION_STRING "3.6.5"
+#define MPREAL_VERSION_PATCHLEVEL 6
+#define MPREAL_VERSION_STRING "3.6.6"
 
 // Detect compiler using signatures from http://predef.sourceforge.net/
 #if defined(__GNUC__) && defined(__INTEL_COMPILER)
@@ -1513,7 +1513,7 @@ inline const mpreal operator/(const double  b, const mpreal& a)
     mpfr_d_div(x.mpfr_ptr(), b, a.mpfr_srcptr(), mpreal::get_default_rnd());
     return x;
 #else
-    mpreal x(0, mpfr_get_prec(a.mpfr_ptr()));
+    mpreal x(b, mpfr_get_prec(a.mpfr_ptr()));
     x /= a;
     return x;
 #endif
@@ -2011,6 +2011,12 @@ inline int mpreal::set_exp (mp_exp_t e)
     return x;
 }
 
+inline mpreal& negate(mpreal& x) // -x in place
+{
+    mpfr_neg(x.mpfr_ptr(),x.mpfr_srcptr(),mpreal::get_default_rnd());
+    return x;
+}
+
 inline const mpreal frexp(const mpreal& x, mp_exp_t* exp, mp_rnd_t mode = mpreal::get_default_rnd())
 {
     mpreal y(x);
@@ -2214,7 +2220,11 @@ inline const mpreal sqrt(const int v, mp_rnd_t rnd_mode)
 inline const mpreal root(const mpreal& x, unsigned long int k, mp_rnd_t r = mpreal::get_default_rnd())
 {
     mpreal y(0, mpfr_get_prec(x.mpfr_srcptr())); 
-    mpfr_root(y.mpfr_ptr(), x.mpfr_srcptr(), k, r);  
+#if (MPFR_VERSION >= MPFR_VERSION_NUM(4,0,0))
+    mpfr_rootn_ui(y.mpfr_ptr(), x.mpfr_srcptr(), k, r);  
+#else
+    mpfr_root(y.mpfr_ptr(), x.mpfr_srcptr(), k, r);
+#endif
     return y; 
 }
 
@@ -2699,33 +2709,26 @@ inline const mpreal random(unsigned int seed = 0)
         initialize = false;
     }
 
-    if(seed != 0)    gmp_randseed_ui(state,seed);
+    if(seed != 0) gmp_randseed_ui(state,seed);
 
     return mpfr::urandom(state);
 #else
     if(seed != 0)    std::srand(seed);
     return mpfr::mpreal(std::rand()/(double)RAND_MAX);
 #endif
-
 }
 
 #if (MPFR_VERSION >= MPFR_VERSION_NUM(3,1,0))
-
-// TODO: 
-// Use mpfr_nrandom since mpfr_grandom is deprecated
-#if defined(_MSC_VER)
-#pragma warning( push )
-#pragma warning( disable : 1478)
-#endif
 inline const mpreal grandom (gmp_randstate_t& state, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
 {
     mpreal x;
+#if (MPFR_VERSION >= MPFR_VERSION_NUM(4,0,0))
+    mpfr_nrandom(x.mpfr_ptr(), state, rnd_mode);
+#else
     mpfr_grandom(x.mpfr_ptr(), NULL, state, rnd_mode);
+#endif
     return x;
 }
-#if defined(_MSC_VER)
-#pragma warning( pop )
-#endif
 
 inline const mpreal grandom(unsigned int seed = 0)
 {
