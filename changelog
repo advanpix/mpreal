@@ -1,12 +1,122 @@
+2019-01-25  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* .hgtags:
+	Moved tag mpfrc++-3.6.6 to changeset 993de1ab3ab2 (from changeset
+	eb1156e6ce09)
+	[7dea3b06cace] [tip]
+
+	* mpreal.h:
+	Merged all contributed changes with main
+	[993de1ab3ab2] [mpfrc++-3.6.6]
+
+2017-08-16  Ed Smith-Rowland  <3dw4rd@verizon.net>
+
+	* mpreal.h:
+	Fix ilogb. Return const not needed for friend. Rounding not useable.
+	[5a1542642bf0]
+
+2017-08-07  Ed Smith-Rowland  <3dw4rd@verizon.net>
+
+	* mpreal.h:
+	Add ilogb.
+	[0c52ebf3b604]
+
+2017-06-05  Paul Hentschel  <paul@hpminc.com>
+
+	* mpreal.h:
+	Changed grandom function to work with Brian Gladman's latest dev
+	version of mpfr.
+	[9ef1fc459291]
+
+2019-01-25  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* .hgtags:
+	Added tag mpfrc++-3.6.6 for changeset eb1156e6ce09
+	[a1f712755491]
+
+	* .hgtags:
+	Removed tag mpfrc++-3.6.6
+	[eb1156e6ce09]
+
+	* .hgtags:
+	Added tag mpfrc++-3.6.6 for changeset c0c3024fe811
+	[33d2503a3d25]
+
+	* .hgtags:
+	Added tag 3.6.6 for changeset c0c3024fe811
+	[4f5a23a11962]
+
+	* mpreal.h:
+	Added support for new functions in MFPR 4.0.0, added negate function
+	and fixed bug in double/mpreal division operator.
+	[c0c3024fe811] [3.6.6]
+
+2016-12-20  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Added another overload for FREXP for better compatibility with
+	STD::FREXP (provided by Charles Karney).
+	[5219ee6c0214]
+
+2016-12-15  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* .hgtags:
+	Moved tag mpfrc++-3.6.5 to changeset 519012baebd7 (from changeset
+	ca4689c69eaa)
+	[dd9acba59d27]
+
+	* mpreal.h:
+	Fixed GCC warnings on unknown pragmas.
+	[519012baebd7] [mpfrc++-3.6.5]
+
+	* .hgtags:
+	Added tag mpfrc++-3.6.5 for changeset ca4689c69eaa
+	[75f1e9602bb3]
+
+	* Merged with online branch
+	[ca4689c69eaa]
+
+2016-11-24  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* README.md:
+	README.md edited online with Bitbucket
+	[d7f37b26713c]
+
+2016-12-15  Pavel Holoborodko  <pavel@holoborodko.com>
+
+	* mpreal.h:
+	Updates to move-operations, small fixes, bumped to 3.6.5 version.
+	[997653929d38]
+
 2016-08-29  Pavel Holoborodko  <pavel@advanpix.com>
 
 	* .hgtags:
+	Removed tag 3.6.4
+	[f29db8a042ad]
+
+	* .hgtags:
+	Added tag mpfrc++-3.6.4 for changeset 667c8874ec46
+	[397112248c31]
+
+	* .hgtags:
+	Added tag 3.6.4 for changeset c9a66bcd9828
+	[667c8874ec46] [mpfrc++-3.6.4]
+
+	* .hgtags:
+	Removed tag 3.6.4
+	[c9a66bcd9828]
+
+	* changelog:
+	Changelog has been updated.
+	[ad643b2e9fe8]
+
+	* .hgtags:
 	Added tag 3.6.4 for changeset f961c1f3af6c
-	[1b5a28d2f1f9] [tip]
+	[1b5a28d2f1f9]
 
 	* mpreal.h:
 	Bumped version to 3.6.4
-	[f961c1f3af6c] [3.6.4]
+	[f961c1f3af6c]
 
 	* mpreal.h:
 	Added nextpow2, setsignbit and 3-4 argument hypot with protection
