@@ -5,7 +5,7 @@
     Project homepage:    http://www.holoborodko.com/pavel/mpfr
     Contact e-mail:      pavel@holoborodko.com
 
-    Copyright (c) 2008-2019 Pavel Holoborodko
+    Copyright (c) 2008-2020 Pavel Holoborodko
 
     Contributors:
     Dmitriy Gubanov, Konstantin Holoborodko, Brian Gladman, 
@@ -69,8 +69,8 @@
 // Library version
 #define MPREAL_VERSION_MAJOR 3
 #define MPREAL_VERSION_MINOR 6
-#define MPREAL_VERSION_PATCHLEVEL 6
-#define MPREAL_VERSION_STRING "3.6.6"
+#define MPREAL_VERSION_PATCHLEVEL 7
+#define MPREAL_VERSION_STRING "3.6.7"
 
 // Detect compiler using signatures from http://predef.sourceforge.net/
 #if defined(__GNUC__) && defined(__INTEL_COMPILER)
@@ -303,11 +303,15 @@ public:
 
 #if defined (MPREAL_HAVE_EXPLICIT_CONVERTERS)
     explicit operator bool               () const { return toBool();                 }
-    explicit operator int                () const { return int(toLong());            }
+    explicit operator signed char        () const { return (signed char)toLong();    }
+    explicit operator unsigned char      () const { return (unsigned char)toULong(); }
+    explicit operator short              () const { return (short)toLong();          }
+    explicit operator unsigned short     () const { return (unsigned short)toULong();}
+    explicit operator int                () const { return (int)toLong();            }
+    explicit operator unsigned int       () const { return (unsigned int)toULong();  }
     explicit operator long               () const { return toLong();                 }
-    explicit operator long long          () const { return toLLong();                }
-    explicit operator unsigned           () const { return unsigned(toULong());      }
     explicit operator unsigned long      () const { return toULong();                }
+    explicit operator long long          () const { return toLLong();                }
     explicit operator unsigned long long () const { return toULLong();               }
     explicit operator float              () const { return toFloat();                }
     explicit operator double             () const { return toDouble();               }
@@ -354,7 +358,7 @@ public:
     friend const mpreal log  (const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal log2 (const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal logb (const mpreal& v, mp_rnd_t rnd_mode);
-    friend mp_exp_t ilogb(const mpreal& v);
+    friend     mp_exp_t ilogb(const mpreal& v);
     friend const mpreal log10(const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal exp  (const mpreal& v, mp_rnd_t rnd_mode); 
     friend const mpreal exp2 (const mpreal& v, mp_rnd_t rnd_mode);
@@ -469,14 +473,16 @@ public:
     friend const mpreal ceil (const mpreal& v);
     friend const mpreal floor(const mpreal& v);
     friend const mpreal round(const mpreal& v);
+    friend long lround(const mpreal& v);
+    friend long long llround(const mpreal& v);
     friend const mpreal trunc(const mpreal& v);
     friend const mpreal rint_ceil   (const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal rint_floor  (const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal rint_round  (const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal rint_trunc  (const mpreal& v, mp_rnd_t rnd_mode);
     friend const mpreal frac        (const mpreal& v, mp_rnd_t rnd_mode);
-    friend const mpreal remainder   (         const mpreal& x, const mpreal& y, mp_rnd_t rnd_mode);
-    friend const mpreal remquo      (long* q, const mpreal& x, const mpreal& y, mp_rnd_t rnd_mode);
+    friend const mpreal remainder   (const mpreal& x, const mpreal& y, mp_rnd_t rnd_mode);
+    friend const mpreal remquo      (const mpreal& x, const mpreal& y, int* q, mp_rnd_t rnd_mode);
     
     // Miscellaneous Functions
     friend const mpreal nexttoward (const mpreal& x, const mpreal& y);
@@ -2269,7 +2275,7 @@ inline const mpreal asin  (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd
 inline const mpreal atan  (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(atan );    }
 
 inline const mpreal logb  (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   return log2 (abs(x),r);                    }
-inline mp_exp_t ilogb(const mpreal& x) { return x.get_exp(); }
+inline     mp_exp_t ilogb (const mpreal& x) { return x.get_exp(); }
 
 inline const mpreal acot  (const mpreal& v, mp_rnd_t r = mpreal::get_default_rnd()) {   return atan (1/v, r);                      }
 inline const mpreal asec  (const mpreal& v, mp_rnd_t r = mpreal::get_default_rnd()) {   return acos (1/v, r);                      }
@@ -2371,10 +2377,12 @@ inline const mpreal remainder (const mpreal& x, const mpreal& y, mp_rnd_t rnd_mo
     return a;
 }
 
-inline const mpreal remquo (long* q, const mpreal& x, const mpreal& y, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
+inline const mpreal remquo (const mpreal& x, const mpreal& y, int* q, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
 {
+    long lq;
     mpreal a(0,(std::max)(y.getPrecision(), x.getPrecision()));
-    mpfr_remquo(a.mpfr_ptr(),q, x.mpfr_srcptr(), y.mpfr_srcptr(), rnd_mode);
+    mpfr_remquo(a.mpfr_ptr(), &lq, x.mpfr_srcptr(), y.mpfr_srcptr(), rnd_mode);
+    if (q) *q = int(lq);
     return a;
 }
 
@@ -2605,6 +2613,24 @@ inline const mpreal round(const mpreal& v)
     return x;
 }
 
+inline long lround(const mpreal& v)
+{
+    long r = std::numeric_limits<long>::min();
+    mpreal x = round(v);
+    if (abs(x) < -mpreal(r))    // Assume mpreal(LONG_MIN) is exact
+      r = long(x);
+    return r;
+}
+
+inline long long llround(const mpreal& v)
+{
+    long long r = std::numeric_limits<long long>::min();
+    mpreal x = round(v);
+    if (abs(x) < -mpreal(r))    // Assume mpreal(LLONG_MIN) is exact
+      r = (long long)(x);
+    return r;
+}
+
 inline const mpreal trunc(const mpreal& v)
 {
     mpreal x(v);
@@ -2781,6 +2807,16 @@ inline const mpreal pow(const mpreal& a, const mpz_t b, mp_rnd_t rnd_mode = mpre
     mpreal x(a);
     mpfr_pow_z(x.mp,x.mp,b,rnd_mode);
     return x;
+}
+
+inline const mpreal pow(const mpreal& a, const long long b, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
+{
+    return pow(a,mpreal(b));
+}
+
+inline const mpreal pow(const mpreal& a, const unsigned long long b, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
+{
+    return pow(a,mpreal(b));
 }
 
 inline const mpreal pow(const mpreal& a, const unsigned long int b, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
@@ -3070,7 +3106,39 @@ inline const mpreal pow(const double a, const int b, mp_rnd_t rnd_mode)
 // Non-throwing swap C++ idiom: http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Non-throwing_swap
 namespace std
 {
-	// we are allowed to extend namespace std with specializations only
+    inline const mpfr::mpreal& min(const mpfr::mpreal& a, const mpfr::mpreal& b, bool omitnan = false)
+    {
+        if(omitnan)
+        {
+                 if(isnan(a)) return b;
+            else if(isnan(b)) return a;
+        }
+        else
+        {
+                 if(isnan(a)) return a;
+            else if(isnan(b)) return b;
+        }
+        
+        return a <= b ? a : b;
+    }
+
+    inline const mpfr::mpreal& max(const mpfr::mpreal& a, const mpfr::mpreal& b, bool omitnan = false)
+    {
+        if(omitnan)
+        {
+                 if(isnan(a)) return b;
+            else if(isnan(b)) return a;
+        }
+        else
+        {
+                 if(isnan(a)) return a;
+            else if(isnan(b)) return b;
+        }
+
+        return a >= b ? a : b;
+    }
+
+
     template <>
     inline void swap(mpfr::mpreal& x, mpfr::mpreal& y) 
     { 
