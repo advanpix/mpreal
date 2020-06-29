@@ -2809,12 +2809,14 @@ inline const mpreal pow(const mpreal& a, const mpz_t b, mp_rnd_t rnd_mode = mpre
     return x;
 }
 
-inline const mpreal pow(const mpreal& a, const long long b, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
+inline const mpreal pow(const mpreal& a, const long long b, mp_rnd_t rnd_mode = mpreal::get_default_rnd());
+inline const mpreal pow(const mpreal& a, const long long b, mp_rnd_t)
 {
     return pow(a,mpreal(b));
 }
 
-inline const mpreal pow(const mpreal& a, const unsigned long long b, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
+inline const mpreal pow(const mpreal& a, const unsigned long long b, mp_rnd_t rnd_mode = mpreal::get_default_rnd());
+inline const mpreal pow(const mpreal& a, const unsigned long long b, mp_rnd_t)
 {
     return pow(a,mpreal(b));
 }
