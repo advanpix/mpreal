@@ -5,5 +5,5 @@ example.o: example.cpp
 	g++ -c example.cpp
 
 clean:
-	rm -f *.o 
+	rm -f *.o
 
