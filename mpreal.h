@@ -2618,7 +2618,7 @@ inline long lround(const mpreal& v)
     long r = std::numeric_limits<long>::min();
     mpreal x = round(v);
     if (abs(x) < -mpreal(r))    // Assume mpreal(LONG_MIN) is exact
-      r = long(x);
+      r = x.toLong();
     return r;
 }
 
@@ -2627,7 +2627,7 @@ inline long long llround(const mpreal& v)
     long long r = std::numeric_limits<long long>::min();
     mpreal x = round(v);
     if (abs(x) < -mpreal(r))    // Assume mpreal(LLONG_MIN) is exact
-      r = (long long)(x);
+      r = x.toLLong();
     return r;
 }
 
@@ -2809,15 +2809,15 @@ inline const mpreal pow(const mpreal& a, const mpz_t b, mp_rnd_t rnd_mode = mpre
     return x;
 }
 
-inline const mpreal pow(const mpreal& a, const long long b, mp_rnd_t rnd_mode = mpreal::get_default_rnd());
-inline const mpreal pow(const mpreal& a, const long long b, mp_rnd_t)
+inline const mpreal pow(const mpreal& a, const long long b, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
 {
+    (void)rnd_mode;
     return pow(a,mpreal(b));
 }
 
-inline const mpreal pow(const mpreal& a, const unsigned long long b, mp_rnd_t rnd_mode = mpreal::get_default_rnd());
-inline const mpreal pow(const mpreal& a, const unsigned long long b, mp_rnd_t)
+inline const mpreal pow(const mpreal& a, const unsigned long long b, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
 {
+    (void)rnd_mode;
     return pow(a,mpreal(b));
 }
 
@@ -3108,7 +3108,7 @@ inline const mpreal pow(const double a, const int b, mp_rnd_t rnd_mode)
 // Non-throwing swap C++ idiom: http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Non-throwing_swap
 namespace std
 {
-    inline const mpfr::mpreal& min(const mpfr::mpreal& a, const mpfr::mpreal& b, bool omitnan)
+    inline const mpfr::mpreal& min(const mpfr::mpreal& a, const mpfr::mpreal& b, bool omitnan = false)
     {
         if(omitnan)
         {
@@ -3124,7 +3124,7 @@ namespace std
         return a <= b ? a : b;
     }
 
-    inline const mpfr::mpreal& max(const mpfr::mpreal& a, const mpfr::mpreal& b, bool omitnan)
+    inline const mpfr::mpreal& max(const mpfr::mpreal& a, const mpfr::mpreal& b, bool omitnan = false)
     {
         if(omitnan)
         {
