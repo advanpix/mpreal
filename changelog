@@ -1,3 +1,10 @@
+2022-01-18  Pavel Holoborodko  <pavel@holoborodko.com>
+	
+	* Fixed incompatibility with MPFR 4.2.0 by disabling MPFR_SRCPTR macro.
+	* Removed unnecessary min/max overloads from std namespace.
+	* Added new functions from MPFR 4.0.0 for incomplete gamma (gammainc) and beta (beta) functions.
+	* Added new functions from MPFR 4.2.0: cosu, sinu, tanu, acosu, asinu, atanu, atan2u, cospi, sinpi, tanpi, acospi, asinpi, atanpi, atan2pi, log2p1, log10p1, exp2m1, exp10m1, compound, powr and fmod_ui. Thanks to Brian Gladman for the contribution.
+
 2019-01-25  Pavel Holoborodko  <pavel@holoborodko.com>
 
 	* .hgtags:
