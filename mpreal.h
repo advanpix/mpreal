@@ -5,7 +5,7 @@
     Project homepage:    http://www.holoborodko.com/pavel/mpfr
     Contact e-mail:      pavel@holoborodko.com
 
-    Copyright (c) 2008-2020 Pavel Holoborodko
+    Copyright (c) 2008-2022 Pavel Holoborodko
 
     Contributors:
     Dmitriy Gubanov, Konstantin Holoborodko, Brian Gladman,
@@ -69,8 +69,8 @@
 // Library version
 #define MPREAL_VERSION_MAJOR 3
 #define MPREAL_VERSION_MINOR 6
-#define MPREAL_VERSION_PATCHLEVEL 8
-#define MPREAL_VERSION_STRING "3.6.8"
+#define MPREAL_VERSION_PATCHLEVEL 9
+#define MPREAL_VERSION_STRING "3.6.9"
 
 // Detect compiler using signatures from http://predef.sourceforge.net/
 #if defined(__GNUC__) && defined(__INTEL_COMPILER)
@@ -122,6 +122,7 @@
     #define MPREAL_MSVC_DEBUGVIEW_DATA
 #endif
 
+#define MPFR_USE_NO_MACRO
 #include <mpfr.h>
 
 #if (MPFR_VERSION < MPFR_VERSION_NUM(3,0,0))
@@ -2189,9 +2190,17 @@ inline mp_exp_t mpreal::get_emax_max (void)
 //////////////////////////////////////////////////////////////////////////
 // Mathematical Functions
 //////////////////////////////////////////////////////////////////////////
+
+// Unary function template with single 'mpreal' argument
 #define MPREAL_UNARY_MATH_FUNCTION_BODY(f)                    \
         mpreal y(0, mpfr_get_prec(x.mpfr_srcptr()));          \
         mpfr_##f(y.mpfr_ptr(), x.mpfr_srcptr(), r);           \
+        return y;
+
+// Binary function template with 'mpreal' and 'unsigned long' arguments
+#define MPREAL_BINARY_MATH_FUNCTION_UI_BODY(f, u)             \
+        mpreal y(0, mpfr_get_prec(x.mpfr_srcptr()));          \
+        mpfr_##f(y.mpfr_ptr(), x.mpfr_srcptr(), u, r);        \
         return y;
 
 inline const mpreal sqr  (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd())
@@ -2307,6 +2316,103 @@ inline const mpreal besselj0(const mpreal& x, mp_rnd_t r = mpreal::get_default_r
 inline const mpreal besselj1(const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(j1     );    }
 inline const mpreal bessely0(const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(y0     );    }
 inline const mpreal bessely1(const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) {   MPREAL_UNARY_MATH_FUNCTION_BODY(y1     );    }
+
+#if (MPFR_VERSION >= MPFR_VERSION_NUM(4,0,0))
+inline const mpreal gammainc (const mpreal& a, const mpreal& x, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
+{
+    /*
+       The non-normalized (upper) incomplete gamma function of a and x:
+       gammainc(a,x) := Gamma(a,x) = int(t^(a-1) * exp(-t), t=x..infinity)
+    */
+    mpreal y(0,(std::max)(a.getPrecision(), x.getPrecision()));
+    mpfr_gamma_inc(y.mpfr_ptr(), a.mpfr_srcptr(), x.mpfr_srcptr(), rnd_mode);
+    return y;
+}
+
+inline const mpreal beta (const mpreal& z, const mpreal& w, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
+{
+    /*
+       Beta function, uses formula (6.2.2) from Abramowitz & Stegun:
+       beta(z,w) = gamma(z)*gamma(w)/gamma(z+w)
+    */
+    mpreal y(0,(std::max)(z.getPrecision(), w.getPrecision()));
+    mpfr_beta(y.mpfr_ptr(), z.mpfr_srcptr(), w.mpfr_srcptr(), rnd_mode);
+    return y;
+}
+
+inline const mpreal log_ui (unsigned long int n, mp_prec_t prec = mpreal::get_default_prec(), mp_rnd_t rnd_mode = mpreal::get_default_rnd())
+{
+    /* Computes natural logarithm of an unsigned long  */
+    mpreal y(0, prec);
+    mpfr_log_ui(y.mpfr_ptr(),n,rnd_mode);
+    return y;
+}
+#endif
+
+#if (MPFR_VERSION >= MPFR_VERSION_NUM(4,2,0))
+
+/* f(x,u) = f(2*pi*x/u) */
+inline const mpreal cosu   (const mpreal& x, unsigned long u, mp_rnd_t r = mpreal::get_default_rnd()) { MPREAL_BINARY_MATH_FUNCTION_UI_BODY(cosu,  u); }
+inline const mpreal sinu   (const mpreal& x, unsigned long u, mp_rnd_t r = mpreal::get_default_rnd()) { MPREAL_BINARY_MATH_FUNCTION_UI_BODY(sinu,  u); }
+inline const mpreal tanu   (const mpreal& x, unsigned long u, mp_rnd_t r = mpreal::get_default_rnd()) { MPREAL_BINARY_MATH_FUNCTION_UI_BODY(tanu,  u); }
+inline const mpreal acosu  (const mpreal& x, unsigned long u, mp_rnd_t r = mpreal::get_default_rnd()) { MPREAL_BINARY_MATH_FUNCTION_UI_BODY(acosu, u); }
+inline const mpreal asinu  (const mpreal& x, unsigned long u, mp_rnd_t r = mpreal::get_default_rnd()) { MPREAL_BINARY_MATH_FUNCTION_UI_BODY(asinu, u); }
+inline const mpreal atanu  (const mpreal& x, unsigned long u, mp_rnd_t r = mpreal::get_default_rnd()) { MPREAL_BINARY_MATH_FUNCTION_UI_BODY(atanu, u); }
+
+/* f(x) = f(pi*x) */
+inline const mpreal cospi  (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) { MPREAL_UNARY_MATH_FUNCTION_BODY(cospi ); }
+inline const mpreal sinpi  (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) { MPREAL_UNARY_MATH_FUNCTION_BODY(sinpi ); }
+inline const mpreal tanpi  (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) { MPREAL_UNARY_MATH_FUNCTION_BODY(tanpi ); }
+inline const mpreal acospi (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) { MPREAL_UNARY_MATH_FUNCTION_BODY(acospi); }
+inline const mpreal asinpi (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) { MPREAL_UNARY_MATH_FUNCTION_BODY(asinpi); }
+inline const mpreal atanpi (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) { MPREAL_UNARY_MATH_FUNCTION_BODY(atanpi); }
+
+inline const mpreal log2p1 (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) { MPREAL_UNARY_MATH_FUNCTION_BODY(log2p1 ); }  /* log2 (1+x) */
+inline const mpreal log10p1(const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) { MPREAL_UNARY_MATH_FUNCTION_BODY(log10p1); }  /* log10(1+x) */
+inline const mpreal exp2m1 (const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) { MPREAL_UNARY_MATH_FUNCTION_BODY(exp2m1 ); }  /* 2^x-1      */
+inline const mpreal exp10m1(const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd()) { MPREAL_UNARY_MATH_FUNCTION_BODY(exp10m1); }  /* 10^x-1     */
+
+inline const mpreal atan2u(const mpreal& y, const mpreal& x, unsigned long u, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
+{
+    /*
+        atan2u(y,x,u) = atan(|y/x|)*u/(2*pi)   for x > 0
+        atan2u(y,x,u) = 1-atan(|y/x|)*u/(2*pi) for x < 0
+    */
+    mpreal a(0, (std::max)(y.getPrecision(), x.getPrecision()));
+    mpfr_atan2u(a.mpfr_ptr(), y.mpfr_srcptr(), x.mpfr_srcptr(), u, rnd_mode);
+    return a;
+}
+
+inline const mpreal atan2pi(const mpreal& y, const mpreal& x, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
+{
+    /* atan2pi(x) = atan2u(u=2) */
+    mpreal a(0, (std::max)(y.getPrecision(), x.getPrecision()));
+    mpfr_atan2pi(a.mpfr_ptr(), y.mpfr_srcptr(), x.mpfr_srcptr(), rnd_mode);
+    return a;
+}
+
+inline const mpreal powr(const mpreal& x, const mpreal& y, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
+{
+    /* powr(x,y) = exp(y*log(x)) */
+    mpreal a(0, (std::max)(x.getPrecision(), y.getPrecision()));
+    mpfr_powr(a.mpfr_ptr(), x.mpfr_srcptr(), y.mpfr_srcptr(), rnd_mode);
+    return a;
+}
+
+inline const mpreal compound(const mpreal& x, long n, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
+{
+    /* compound(x,n) = (1+x)^n */
+    mpreal y(0, x.getPrecision());
+    mpfr_compound_si(y.mpfr_ptr(),x.mpfr_srcptr(),n,rnd_mode);
+    return y;
+}
+
+inline const mpreal fmod(const mpreal& x, unsigned long u, mp_rnd_t r = mpreal::get_default_rnd())
+{
+    /* x modulo a machine integer u */
+    MPREAL_BINARY_MATH_FUNCTION_UI_BODY(fmod_ui, u);
+}
+#endif
 
 inline const mpreal nextpow2(const mpreal& x, mp_rnd_t r = mpreal::get_default_rnd())
 {
@@ -3108,38 +3214,6 @@ inline const mpreal pow(const double a, const int b, mp_rnd_t rnd_mode)
 // Non-throwing swap C++ idiom: http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Non-throwing_swap
 namespace std
 {
-    inline const mpfr::mpreal& min(const mpfr::mpreal& a, const mpfr::mpreal& b, bool omitnan)
-    {
-        if(omitnan)
-        {
-                 if(isnan(a)) return b;
-            else if(isnan(b)) return a;
-        }
-        else
-        {
-                 if(isnan(a)) return a;
-            else if(isnan(b)) return b;
-        }
-
-        return (b < a) ? b : a;
-    }
-
-    inline const mpfr::mpreal& max(const mpfr::mpreal& a, const mpfr::mpreal& b, bool omitnan)
-    {
-        if(omitnan)
-        {
-                 if(isnan(a)) return b;
-            else if(isnan(b)) return a;
-        }
-        else
-        {
-                 if(isnan(a)) return a;
-            else if(isnan(b)) return b;
-        }
-
-        return (a < b) ? b : a;
-    }
-
 
     template <>
     inline void swap(mpfr::mpreal& x, mpfr::mpreal& y)
