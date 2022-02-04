@@ -154,8 +154,8 @@ private:
 public:
 
     // Get default rounding mode & precision
-    inline static mp_rnd_t   get_default_rnd()    {    return (mp_rnd_t)(mpfr_get_default_rounding_mode());       }
-    inline static mp_prec_t  get_default_prec()   {    return (mpfr_get_default_prec)();                          }
+    inline static mp_rnd_t   get_default_rnd()    {    return static_cast<mp_rnd_t>(mpfr_get_default_rounding_mode()); }
+    inline static mp_prec_t  get_default_prec()   {    return (mpfr_get_default_prec)();                               }
 
     // Constructors && type conversions
     mpreal();
@@ -304,12 +304,12 @@ public:
 
 #if defined (MPREAL_HAVE_EXPLICIT_CONVERTERS)
     explicit operator bool               () const { return toBool();                 }
-    explicit operator signed char        () const { return (signed char)toLong();    }
-    explicit operator unsigned char      () const { return (unsigned char)toULong(); }
-    explicit operator short              () const { return (short)toLong();          }
-    explicit operator unsigned short     () const { return (unsigned short)toULong();}
-    explicit operator int                () const { return (int)toLong();            }
-    explicit operator unsigned int       () const { return (unsigned int)toULong();  }
+    explicit operator signed char        () const { return static_cast<signed char>(toLong());    }
+    explicit operator unsigned char      () const { return static_cast<unsigned char>(toULong()); }
+    explicit operator short              () const { return static_cast<short>(toLong());          }
+    explicit operator unsigned short     () const { return static_cast<unsigned short>(toULong());}
+    explicit operator int                () const { return static_cast<int>(toLong());            }
+    explicit operator unsigned int       () const { return static_cast<unsigned int>(toULong());  }
     explicit operator long               () const { return toLong();                 }
     explicit operator unsigned long      () const { return toULong();                }
     explicit operator long long          () const { return toLLong();                }
@@ -631,7 +631,7 @@ inline mpreal::mpreal(const mpfr_t  u, bool shared)
 
 inline mpreal::mpreal(const mpf_t u)
 {
-    mpfr_init2(mpfr_ptr(),(mp_prec_t) mpf_get_prec(u)); // (gmp: mp_bitcnt_t) unsigned long -> long (mpfr: mp_prec_t)
+    mpfr_init2(mpfr_ptr(),static_cast<mp_prec_t>(mpf_get_prec(u))); // (gmp: mp_bitcnt_t) unsigned long -> long (mpfr: mp_prec_t)
     mpfr_set_f(mpfr_ptr(),u,mpreal::get_default_rnd());
 
     MPREAL_MSVC_DEBUGVIEW_CODE;
@@ -2580,7 +2580,7 @@ inline const mpreal sum (const mpreal tab[], const unsigned long int n, int& sta
         p[i] = tab[i].mpfr_srcptr();
 
     mpreal x;
-    status = mpfr_sum(x.mpfr_ptr(), (mpfr_ptr*)p, n, mode);
+    status = mpfr_sum(x.mpfr_ptr(), const_cast<mpfr_ptr*>(p), n, mode);
 
     delete [] p;
     return x;
@@ -3269,8 +3269,8 @@ namespace std
         // Please note, exponent range is not fixed in MPFR
         static const int min_exponent = MPFR_EMIN_DEFAULT;
         static const int max_exponent = MPFR_EMAX_DEFAULT;
-        MPREAL_PERMISSIVE_EXPR static const int min_exponent10 = (int) (MPFR_EMIN_DEFAULT * 0.3010299956639811);
-        MPREAL_PERMISSIVE_EXPR static const int max_exponent10 = (int) (MPFR_EMAX_DEFAULT * 0.3010299956639811);
+        MPREAL_PERMISSIVE_EXPR static const int min_exponent10 = static_cast<int>(MPFR_EMIN_DEFAULT * 0.3010299956639811);
+        MPREAL_PERMISSIVE_EXPR static const int max_exponent10 = static_cast<int>(MPFR_EMAX_DEFAULT * 0.3010299956639811);
 
 #ifdef MPREAL_HAVE_DYNAMIC_STD_NUMERIC_LIMITS
 
