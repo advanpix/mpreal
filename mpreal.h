@@ -2763,8 +2763,8 @@ inline int sgn(const mpreal& op)
 //////////////////////////////////////////////////////////////////////////
 // Miscellaneous Functions
 inline void         swap (mpreal& a, mpreal& b)            {    mpfr_swap(a.mpfr_ptr(),b.mpfr_ptr());   }
-inline const mpreal (max)(const mpreal& x, const mpreal& y){    return (x>y?x:y);       }
-inline const mpreal (min)(const mpreal& x, const mpreal& y){    return (x<y?x:y);       }
+inline const mpreal (max)(const mpreal& x, const mpreal& y){    return (x<y?y:x);       }
+inline const mpreal (min)(const mpreal& x, const mpreal& y){    return (y<x?y:x);       }
 
 inline const mpreal fmax(const mpreal& x, const mpreal& y, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
 {
