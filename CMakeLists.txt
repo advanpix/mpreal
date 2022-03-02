@@ -5,27 +5,9 @@ project(
   VERSION 3.6.7
   LANGUAGES CXX
 )
- 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-find_package(GMP)
-if (GMP_FOUND)
-  message(STATUS "GMP found!")
-else()
-  message(WARNING "GMP not found!")
-endif()
+add_library(mpreal INTERFACE)
+target_include_directories(mpreal INTERFACE .)
 
-find_package(MPFR)
-if (MPFR_FOUND)
-  message(STATUS "MPFR found!")
-else()
-  message(WARNING "MPFR not found!")
-endif()
-
-if (GMP_FOUND AND MPFR_FOUND)
-  add_library(mpreal INTERFACE)
-  target_include_directories(mpreal INTERFACE .)
-
-  add_executable(mpreal_example example/example.cpp)
-  target_link_libraries(mpreal_example mpreal mpfr)
-endif()
+add_executable(mpreal_example example/example.cpp)
+target_link_libraries(mpreal_example mpreal mpfr)
