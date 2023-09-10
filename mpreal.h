@@ -112,8 +112,6 @@
     #define MPREAL_HAVE_EXPLICIT_CONVERTERS
 #endif
 
-#define MPFR_USE_INTMAX_T   // Enable 64-bit integer types - should be defined before mpfr.h
-
 #if defined(MPREAL_HAVE_MSVC_DEBUGVIEW) && defined(_MSC_VER) && defined(_DEBUG)
     #define MPREAL_MSVC_DEBUGVIEW_CODE     DebugView = toString();
     #define MPREAL_MSVC_DEBUGVIEW_DATA     std::string DebugView;
@@ -122,8 +120,14 @@
     #define MPREAL_MSVC_DEBUGVIEW_DATA
 #endif
 
-#define MPFR_USE_NO_MACRO
-#include <mpfr.h>
+// Descriptive compiler error 
+#if defined __MPFR_H && !defined MPFR_USE_NO_MACRO
+	#error mpreal.h needs to be included before any other headers that include mpfr.h in order to define mpfr-specific preprocessor directives
+#else
+    #define MPFR_USE_INTMAX_T   // Enable 64-bit integer types - should be defined before mpfr.h
+	#define MPFR_USE_NO_MACRO
+	#include <mpfr.h>
+#endif
 
 #if (MPFR_VERSION < MPFR_VERSION_NUM(3,0,0))
     #include <cstdlib>                          // Needed for random()
