@@ -5,7 +5,7 @@
     Project homepage:    http://www.holoborodko.com/pavel/mpfr
     Contact e-mail:      pavel@holoborodko.com
 
-    Copyright (c) 2008-2022 Pavel Holoborodko
+    Copyright (c) 2008-2023 Pavel Holoborodko
 
     Contributors:
     Dmitriy Gubanov, Konstantin Holoborodko, Brian Gladman,
@@ -13,7 +13,7 @@
     Pere Constans, Peter van Hoof, Gael Guennebaud, Tsai Chia Cheng,
     Alexei Zubanov, Jauhien Piatlicki, Victor Berger, John Westwood,
     Petr Aleksandrov, Orion Poplawski, Charles Karney, Arash Partow,
-    Rodney James, Jorge Leitao, Jerome Benoit, Michal Maly.
+    Rodney James, Jorge Leitao, Jerome Benoit, Michal Maly, Abhinav Natarajan.
 
     Licensing:
     (A) MPFR C++ is under GNU General Public License ("GPL").
@@ -68,9 +68,9 @@
 
 // Library version
 #define MPREAL_VERSION_MAJOR 3
-#define MPREAL_VERSION_MINOR 6
-#define MPREAL_VERSION_PATCHLEVEL 9
-#define MPREAL_VERSION_STRING "3.6.9"
+#define MPREAL_VERSION_MINOR 7
+#define MPREAL_VERSION_PATCHLEVEL 0
+#define MPREAL_VERSION_STRING "3.7.0"
 
 // Detect compiler using signatures from http://predef.sourceforge.net/
 #if defined(__GNUC__) && defined(__INTEL_COMPILER)
@@ -120,12 +120,16 @@
     #define MPREAL_MSVC_DEBUGVIEW_DATA
 #endif
 
-// Descriptive compiler error 
-#if defined __MPFR_H && !defined MPFR_USE_NO_MACRO
-	#error mpreal.h needs to be included before any other headers that include mpfr.h in order to define mpfr-specific preprocessor directives
+// Check if mpfr.h was included earlier (and with compatible settings).
+#if defined (__MPFR_H) && !(defined (MPFR_USE_NO_MACRO) && defined (MPFR_USE_INTMAX_T))
+	#error The MPFR_USE_NO_MACRO and MPFR_USE_INTMAX_T must be defined for proper use of mpfr.h/mpreal.h
 #else
-    #define MPFR_USE_INTMAX_T   // Enable 64-bit integer types - should be defined before mpfr.h
-	#define MPFR_USE_NO_MACRO
+    #ifndef MPFR_USE_INTMAX_T
+        #define MPFR_USE_INTMAX_T   // Enable 64-bit integer types - should be defined before mpfr.h
+    #endif
+    #ifndef MPFR_USE_NO_MACRO
+        #define MPFR_USE_NO_MACRO   // Avoid name clash with MPFR, introduced in MPFR 4.2.0
+    #endif
 	#include <mpfr.h>
 #endif
 
@@ -2029,7 +2033,7 @@ inline mpreal& negate(mpreal& x) // -x in place
     return x;
 }
 
-inline const mpreal frexp(const mpreal& x, mp_exp_t* exp, mp_rnd_t mode = mpreal::get_default_rnd())
+inline const mpreal frexp(const mpreal& x, mpfr_exp_t* exp, mp_rnd_t mode = mpreal::get_default_rnd())
 {
     mpreal y(x);
 #if (MPFR_VERSION >= MPFR_VERSION_NUM(3,1,0))
@@ -2038,14 +2042,6 @@ inline const mpreal frexp(const mpreal& x, mp_exp_t* exp, mp_rnd_t mode = mpreal
     *exp = mpfr_get_exp(y.mpfr_srcptr());
     mpfr_set_exp(y.mpfr_ptr(),0);
 #endif
-    return y;
-}
-
-inline const mpreal frexp(const mpreal& x, int* exp, mp_rnd_t mode = mpreal::get_default_rnd())
-{
-    mp_exp_t expl;
-    mpreal y = frexp(x, &expl, mode);
-    *exp = int(expl);
     return y;
 }
 
@@ -2083,8 +2079,9 @@ inline mpreal machine_epsilon(const mpreal& x)
 // minval is 'safe' meaning 1 / minval does not overflow
 inline mpreal minval(mp_prec_t prec)
 {
-    /* min = 1/2 * 2^emin = 2^(emin - 1) */
-    return mpreal(1, prec) << mpreal::get_emin()-1;
+    // The smallest positive value in MPFR is 1/2 * 2^emin = 2^(emin - 1). However it gives infinity if inverted. 
+    // Overall safe minimum is 2^(emin + 1).
+    return mpreal(1, prec) << (mpreal::get_emin()+1);
 }
 
 // maxval is 'safe' meaning 1 / maxval does not underflow
@@ -2248,6 +2245,32 @@ inline const mpreal root(const mpreal& x, unsigned long int k, mp_rnd_t r = mpre
     return y;
 }
 
+inline const mpreal root(const mpreal& x, const mpreal& n, mp_rnd_t r = mpreal::get_default_rnd())
+{
+    if(isint(n) && mpfr_sgn(n.mpfr_ptr()) > 0) return root(x,n.toULong(),r);
+    else
+    {
+        mpreal y(0, (std::max)(mpfr_get_prec(x.mpfr_srcptr()),mpfr_get_prec(n.mpfr_srcptr())));
+
+        if(isnan(x) || isnan(n)) mpfr_set_nan(y.mpfr_ptr());
+        else if(isinf(n))        mpfr_set_si (y.mpfr_ptr(),1,r);
+        else if(iszero(n))       mpfr_set_inf(y.mpfr_ptr(),1);
+        else
+        {
+            mpreal a(0,mpfr_get_prec(x.mpfr_srcptr()));
+            mpreal b(0,mpfr_get_prec(n.mpfr_srcptr()));
+
+            mpfr_ui_div(b.mpfr_ptr(),1,n.mpfr_srcptr(),r);
+            mpfr_abs   (a.mpfr_ptr(),  x.mpfr_srcptr(),r);
+            mpfr_pow   (y.mpfr_ptr(),  a.mpfr_ptr(), b.mpfr_srcptr(), r);
+
+            mpfr_setsign(y.mpfr_ptr(),y.mpfr_srcptr(),mpfr_signbit(x.mpfr_srcptr()),r);
+        }
+
+        return y;
+    }
+}
+
 inline const mpreal dim(const mpreal& a, const mpreal& b, mp_rnd_t r = mpreal::get_default_rnd())
 {
     mpreal y(0, mpfr_get_prec(a.mpfr_srcptr()));
@@ -2263,6 +2286,11 @@ inline int cmpabs(const mpreal& a,const mpreal& b)
 inline int sin_cos(mpreal& s, mpreal& c, const mpreal& v, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
 {
     return mpfr_sin_cos(s.mpfr_ptr(), c.mpfr_ptr(), v.mpfr_srcptr(), rnd_mode);
+}
+
+inline void sincos(const mpreal& x, mpreal *sin, mpreal *cos, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
+{
+    mpfr_sin_cos(sin->mpfr_ptr(), cos->mpfr_ptr(), x.mpfr_srcptr(), rnd_mode);
 }
 
 inline const mpreal sqrt  (const long double v, mp_rnd_t rnd_mode)    {   return sqrt(mpreal(v),rnd_mode);    }
@@ -3218,7 +3246,6 @@ inline const mpreal pow(const double a, const int b, mp_rnd_t rnd_mode)
 // Non-throwing swap C++ idiom: http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Non-throwing_swap
 namespace std
 {
-
     template <>
     inline void swap(mpfr::mpreal& x, mpfr::mpreal& y)
     {
