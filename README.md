@@ -7,7 +7,7 @@
     Project homepage:    http://www.holoborodko.com/pavel/mpfr
     Contact e-mail:      pavel@holoborodko.com
 
-    Copyright (c) 2008-2020 Pavel Holoborodko
+    Copyright (c) 2008-2023 Pavel Holoborodko
 
     Contributors:
     Dmitriy Gubanov, Konstantin Holoborodko, Brian Gladman,
@@ -15,7 +15,7 @@
     Pere Constans, Peter van Hoof, Gael Guennebaud, Tsai Chia Cheng,
     Alexei Zubanov, Jauhien Piatlicki, Victor Berger, John Westwood,
     Petr Aleksandrov, Orion Poplawski, Charles Karney, Arash Partow,
-    Rodney James, Jorge Leitao.
+    Rodney James, Jorge Leitao, Jerome Benoit, Michal Maly, Abhinav Natarajan.
 
     Licensing:
     (A) MPFR C++ is under GNU General Public License ("GPL").
