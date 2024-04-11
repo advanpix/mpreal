@@ -1,3 +1,8 @@
+2024-04-11  Pavel Holoborodko  <pavel@holoborodko.com>
+	
+	* Added proper overload of frexp, compatible with C++ standard (Valerio Di Lecce, Luca Vandelli).
+	* Resolved IsInf macro name conflict with 3rd party libraries (Valerio Di Lecce, Luca Vandelli).
+
 2023-09-10  Pavel Holoborodko  <pavel@holoborodko.com>
 	
 	* Added proper error message if MPFR used with incompatible settings (Abhinav Natarajan).

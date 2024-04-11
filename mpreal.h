@@ -5,7 +5,7 @@
     Project homepage:    http://www.holoborodko.com/pavel/mpfr
     Contact e-mail:      pavel@holoborodko.com
 
-    Copyright (c) 2008-2023 Pavel Holoborodko
+    Copyright (c) 2008-2024 Pavel Holoborodko
 
     Contributors:
     Dmitriy Gubanov, Konstantin Holoborodko, Brian Gladman,
@@ -13,7 +13,8 @@
     Pere Constans, Peter van Hoof, Gael Guennebaud, Tsai Chia Cheng,
     Alexei Zubanov, Jauhien Piatlicki, Victor Berger, John Westwood,
     Petr Aleksandrov, Orion Poplawski, Charles Karney, Arash Partow,
-    Rodney James, Jorge Leitao, Jerome Benoit, Michal Maly, Abhinav Natarajan.
+    Rodney James, Jorge Leitao, Jerome Benoit, Michal Maly, 
+    Abhinav Natarajan, Valerio Di Lecce, Luca Vandelli.
 
     Licensing:
     (A) MPFR C++ is under GNU General Public License ("GPL").
@@ -69,18 +70,18 @@
 // Library version
 #define MPREAL_VERSION_MAJOR 3
 #define MPREAL_VERSION_MINOR 7
-#define MPREAL_VERSION_PATCHLEVEL 0
-#define MPREAL_VERSION_STRING "3.7.0"
+#define MPREAL_VERSION_PATCHLEVEL 1
+#define MPREAL_VERSION_STRING "3.7.1"
 
 // Detect compiler using signatures from http://predef.sourceforge.net/
 #if defined(__GNUC__) && defined(__INTEL_COMPILER)
-    #define IsInf(x) isinf(x)                   // Intel ICC compiler on Linux
+    #define MPREAL_IS_INF(x) isinf(x)           // Intel ICC compiler on Linux
 
 #elif defined(_MSC_VER)                         // Microsoft Visual C++
-    #define IsInf(x) (!_finite(x))
+    #define MPREAL_IS_INF(x) (!_finite(x))
 
 #else
-    #define IsInf(x) std::isinf(x)              // GNU C/C++ (and/or other compilers), just hope for C99 conformance
+    #define MPREAL_IS_INF(x) std::isinf(x)      // GNU C/C++ (and/or other compilers), just hope for C99 conformance
 #endif
 
 // A Clang feature extension to determine compiler features.
@@ -2045,6 +2046,14 @@ inline const mpreal frexp(const mpreal& x, mpfr_exp_t* exp, mp_rnd_t mode = mpre
     return y;
 }
 
+inline const mpreal frexp(const mpreal& x, int* exp, mp_rnd_t mode = mpreal::get_default_rnd())
+{
+    mpfr_exp_t e;
+    mpreal y = frexp(x, &e, mode);
+    *exp = int(e);
+    return y;
+}
+
 inline const mpreal ldexp(const mpreal& v, mp_exp_t exp)
 {
     mpreal x(v);
@@ -2930,7 +2939,7 @@ inline bool mpreal::fits_in_bits(double x, int n)
 {
     int i;
     double t;
-    return IsInf(x) || (std::modf ( std::ldexp ( std::frexp ( x, &i ), n ), &t ) == 0.0);
+    return MPREAL_IS_INF(x) || (std::modf ( std::ldexp ( std::frexp ( x, &i ), n ), &t ) == 0.0);
 }
 
 inline const mpreal pow(const mpreal& a, const mpreal& b, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
