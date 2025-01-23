@@ -63,9 +63,11 @@
 
 // Options
 #define MPREAL_HAVE_MSVC_DEBUGVIEW              // Enable Debugger Visualizer for "Debug" builds in MSVC.
-#define MPREAL_HAVE_DYNAMIC_STD_NUMERIC_LIMITS  // Enable extended std::numeric_limits<mpfr::mpreal> specialization.
+#ifndef MPREAL_HAVE_DYNAMIC_STD_NUMERIC_LIMITS
+#define MPREAL_HAVE_DYNAMIC_STD_NUMERIC_LIMITS 1 // Enable extended std::numeric_limits<mpfr::mpreal> specialization.
                                                 // Meaning that "digits", "round_style" and similar members are defined as functions, not constants.
                                                 // See std::numeric_limits<mpfr::mpreal> at the end of the file for more information.
+#endif
 
 // Library version
 #define MPREAL_VERSION_MAJOR 3
@@ -3312,7 +3314,7 @@ namespace std
         MPREAL_PERMISSIVE_EXPR static const int min_exponent10 = (int) (MPFR_EMIN_DEFAULT * 0.3010299956639811);
         MPREAL_PERMISSIVE_EXPR static const int max_exponent10 = (int) (MPFR_EMAX_DEFAULT * 0.3010299956639811);
 
-#ifdef MPREAL_HAVE_DYNAMIC_STD_NUMERIC_LIMITS
+#if MPREAL_HAVE_DYNAMIC_STD_NUMERIC_LIMITS
 
         // Following members should be constant according to standard, but they can be variable in MPFR
         // So we define them as functions here.
