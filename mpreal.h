@@ -505,6 +505,11 @@ public:
     friend const mpreal nexttoward (const mpreal& x, const mpreal& y);
     friend const mpreal nextabove  (const mpreal& x);
     friend const mpreal nextbelow  (const mpreal& x);
+    // In the C++ standard library nexttoward always has a long double second
+    // argument.  The more useful function is nextafter where the two arguments
+    // have the same type.  Here we make mpreal::nextafter an alias of
+    // mpreal::nexttoward.
+    friend const mpreal nextafter  (const mpreal& x, const mpreal& y);
 
     // use gmp_randinit_default() to init state, gmp_randclear() to clear
     friend const mpreal urandomb (gmp_randstate_t& state);
@@ -2847,6 +2852,11 @@ inline const mpreal nextbelow  (const mpreal& x)
     mpreal a(x);
     mpfr_nextbelow(a.mp);
     return a;
+}
+
+inline const mpreal nextafter (const mpreal& x, const mpreal& y)
+{
+    return nexttoward(x, y);
 }
 
 inline const mpreal urandomb (gmp_randstate_t& state)
