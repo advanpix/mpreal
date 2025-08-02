@@ -63,10 +63,15 @@
 
 // Options
 #define MPREAL_HAVE_MSVC_DEBUGVIEW              // Enable Debugger Visualizer for "Debug" builds in MSVC.
-#ifndef MPREAL_HAVE_DYNAMIC_STD_NUMERIC_LIMITS
-#define MPREAL_HAVE_DYNAMIC_STD_NUMERIC_LIMITS 1 // Enable extended std::numeric_limits<mpfr::mpreal> specialization.
-                                                // Meaning that "digits", "round_style" and similar members are defined as functions, not constants.
-                                                // See std::numeric_limits<mpfr::mpreal> at the end of the file for more information.
+#ifndef MPREAL_FIXED_PRECISION
+// If MPREAL_FIXED_PRECISION == 0 (the default), then enable extended
+// std::numeric_limits<mpfr::mpreal> specialization.  Meaning that "digits", "round_style" and
+// similar members are defined as functions, not constants.  See std::numeric_limits<mpfr::mpreal>
+// at the end of the file for more information.
+//
+// Otherwise, digits returns the value MPREAL_FIXED_PRECISION which acts as compile-time setting for
+// the precision provided that set_default_prec is called with this precision.
+#define MPREAL_FIXED_PRECISION 0
 #endif
 
 // Library version
@@ -3324,7 +3329,7 @@ namespace std
         MPREAL_PERMISSIVE_EXPR static const int min_exponent10 = (int) (MPFR_EMIN_DEFAULT * 0.3010299956639811);
         MPREAL_PERMISSIVE_EXPR static const int max_exponent10 = (int) (MPFR_EMAX_DEFAULT * 0.3010299956639811);
 
-#if MPREAL_HAVE_DYNAMIC_STD_NUMERIC_LIMITS
+#if MPREAL_FIXED_PRECISION == 0
 
         // Following members should be constant according to standard, but they can be variable in MPFR
         // So we define them as functions here.
@@ -3367,20 +3372,17 @@ namespace std
         // Digits and round_style are NOT constants when it comes to mpreal.
         // If possible, please use functions digits() and round_style() defined above.
         //
-        // These (default) values are preserved for compatibility with existing libraries, e.g. boost.
-        // Change them accordingly to your application.
-        //
-        // For example, if you use 256 bits of precision uniformly in your program, then:
-        // digits       = 256
-        // digits10     = 77
-        // max_digits10 = 78
-        //
-        // Approximate formula for decimal digits is: digits10 = floor(log10(2) * digits). See bits2digits() for more details.
+        // However if constant values for digits are required , e.g., for use with boost, the
+        // precision can be set at compile time with a positive value for MPREAL_FIXED_PRECISION.
+        // This value is used for "digits" (and hence also for "digits10" and "max_digits10").  It's
+        // advisable to call set_default_prec with this precision so that everything is consistent.
 
         static const std::float_round_style round_style = round_to_nearest;
-        static const int digits       = 53;
-        static const int digits10     = 15;
-        static const int max_digits10 = 16;
+        static const int digits       = MPREAL_FIXED_PRECISION;
+        // 4004/13301 = log10(2) + 2e-9, so this is approximately equivalent to
+        //               digits10     = mpfr::bits2digits(digits);
+        static const int digits10     = (4004 * digits) / 13301;
+        static const int max_digits10 = digits10 + 1;
 #endif
     };
 
